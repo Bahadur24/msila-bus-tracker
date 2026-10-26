@@ -1,0 +1,19 @@
+{
+  "name": "تتبّع حافلات المسيلة",
+  "short_name": "حافلات المسيلة",
+  "description": "تتبّع حافلات النقل الحضري بولاية المسيلة مباشرة من المتصفح — خريطة حيّة، سرعة، حالة، وحافلات قريبة منك.",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0d1117",
+  "theme_color": "#0d1117",
+  "categories": ["travel", "navigation", "utilities"],
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

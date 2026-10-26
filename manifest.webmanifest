@@ -1,19 +1,19 @@
 {
-  "name": "تتبّع حافلات المسيلة",
+  "name": "حافلات المسيلة — خريطة أوضح",
   "short_name": "حافلات المسيلة",
-  "description": "تتبّع حافلات النقل الحضري بولاية المسيلة مباشرة من المتصفح — خريطة حيّة، سرعة، حالة، وحافلات قريبة منك.",
+  "description": "خريطة حافلات المسيلة مع خيارات مظهر وأوضاع خفيفة. التتبع الحقيقي يتطلب إعداد الاتصال محليًا.",
   "lang": "ar",
   "dir": "rtl",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "any",
-  "background_color": "#0d1117",
-  "theme_color": "#0d1117",
+  "background_color": "#f7f9fc",
+  "theme_color": "#f7f9fc",
   "categories": ["travel", "navigation", "utilities"],
   "icons": [
-    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
-    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+    {"src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any"},
+    {"src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+    {"src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"}
   ]
 }

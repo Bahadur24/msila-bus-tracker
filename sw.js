@@ -1,1 +1,29 @@
-var CACHE="msila-tracker-v2",ASSETS=["./index.html","./manifest.webmanifest","./icon.svg","./msila_routes.json"];self.addEventListener("install",function(e){e.waitUntil(caches.open(CACHE).then(function(c){return Promise.all(ASSETS.map(function(a){return c.add(a).catch(function(){})}))}).then(function(){return self.skipWaiting()}))}),self.addEventListener("activate",function(e){e.waitUntil(caches.keys().then(function(keys){return Promise.all(keys.filter(function(k){return k!==CACHE}).map(function(k){return caches.delete(k)}))}).then(function(){return self.clients.claim()}))}),self.addEventListener("fetch",function(e){var req=e.request;if(req.method==="GET"){var url;try{url=new URL(req.url)}catch(err){return}url.origin===self.location.origin&&e.respondWith(fetch(req).then(function(res){if(res&&res.ok){var cp=res.clone();caches.open(CACHE).then(function(c){c.put(req,cp)}).catch(function(){})}return res}).catch(function(){return caches.match(req,{ignoreSearch:!0}).then(function(m){return m||(req.mode==="navigate"?caches.match("./index.html"):Response.error())})}))}});
+/* Cache only the public app shell. Never cache credentials, API responses or map tiles. */
+var CACHE = 'msila-tracker-v4-20261026';
+var ASSETS = ['./index.html', './src/styles.css', './src/app.js', './vendor/leaflet.css', './vendor/leaflet.js', './manifest.webmanifest', './icon.svg', './icon-192.png', './icon-512.png', './msila_routes.json'];
+self.addEventListener('install', function(event) {
+  event.waitUntil(caches.open(CACHE).then(function(cache) { return cache.addAll(ASSETS); }).then(function() { return self.skipWaiting(); }));
+});
+self.addEventListener('activate', function(event) {
+  event.waitUntil(caches.keys().then(function(keys) {
+    return Promise.all(keys.filter(function(key) { return key.indexOf('msila-tracker-') === 0 && key !== CACHE; }).map(function(key) { return caches.delete(key); }));
+  }).then(function() { return self.clients.claim(); }));
+});
+self.addEventListener('fetch', function(event) {
+  var request = event.request, url = new URL(request.url);
+  if (request.method !== 'GET' || url.origin !== self.location.origin) return;
+  var base = new URL('./', self.location.href);
+  var relative = './' + url.pathname.slice(base.pathname.length);
+  if (!ASSETS.includes(relative) && request.mode !== 'navigate') return;
+  event.respondWith(fetch(request).then(function(response) {
+    if (response.ok && ASSETS.includes(relative)) {
+      var copy = response.clone();
+      caches.open(CACHE).then(function(cache) { cache.put(request, copy); }).catch(function() {});
+    }
+    return response;
+  }).catch(function() {
+    return caches.match(request, {ignoreSearch: true}).then(function(cached) {
+      return cached || (request.mode === 'navigate' ? caches.match('./index.html') : Response.error());
+    });
+  }));
+});

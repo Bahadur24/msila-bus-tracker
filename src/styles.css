@@ -77,3 +77,14 @@ html[data-marker-size="large"] .bus-pin{width:166px;min-height:62px}html[data-ma
 
 /* Hint compositing only while high-performance markers are in motion. */
 html[data-performance="strong"] .leaflet-marker-icon.bus-marker-moving{will-change:transform}
+
+/* Recurrent observed stop locations (aggregated GPS evidence, not official stations). */
+.obs-stop-div{background:transparent;border:0}
+.obs-stop-pin{position:relative;display:block;width:24px;height:24px;border:2px solid #fff;border-radius:50% 50% 50% 0;transform:rotate(-45deg);background:#7653b8;box-shadow:0 2px 8px rgba(0,0,0,.32)}
+.obs-stop-pin::after{content:"";position:absolute;top:5px;left:5px;width:10px;height:10px;border-radius:50%;background:#fff}
+.leaflet-popup.observed-stop-popup .leaflet-popup-content-wrapper,.leaflet-popup.observed-stop-popup .leaflet-popup-tip{background:var(--panel);color:var(--txt)}
+.leaflet-popup.observed-stop-popup .leaflet-popup-content{margin:12px 14px;max-width:270px;line-height:1.7}
+.observed-stop-popup-content{font-family:inherit;direction:rtl;font-size:12px;color:var(--txt)}
+.observed-stop-popup-content strong{display:block;margin-bottom:4px;color:var(--accent);font-size:13px}
+.observed-stop-popup-content .stop-evidence{margin-top:6px;padding-top:6px;border-top:1px solid var(--line);color:var(--muted);font-size:11px}
+.observed-stop-popup-content .stop-caveat{margin-top:6px;padding:7px 8px;border-radius:8px;background:color-mix(in srgb,var(--warn) 12%,var(--panel));color:var(--muted);font-size:10.5px}

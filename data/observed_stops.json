@@ -1,0 +1,122 @@
+{
+  "schema_version": 1,
+  "generated_from": "read-only Traccar snapshots",
+  "observation": {
+    "date": "2026-10-27",
+    "timezone": "Africa/Algiers",
+    "requested_window_start": "2026-10-27T12:51:00+01:00",
+    "requested_window_end": "2026-10-27T18:51:00+01:00",
+    "first_successful_sample": "2026-10-27T12:54:42+01:00",
+    "last_successful_sample": "2026-10-27T18:50:45+01:00",
+    "successful_snapshots": 637,
+    "sampling_interval_seconds": 30,
+    "tracked_bus_records": 57,
+    "failed_polls": 5,
+    "major_gaps": [
+      {
+        "start": "2026-10-27T14:54:12+01:00",
+        "end": "2026-10-27T14:57:09+01:00",
+        "duration_seconds": 177
+      },
+      {
+        "start": "2026-10-27T17:59:31+01:00",
+        "end": "2026-10-27T18:32:45+01:00",
+        "duration_seconds": 1994
+      }
+    ]
+  },
+  "classification": {
+    "label_ar": "مواقع توقف متكرر مرصودة",
+    "official_stations": false,
+    "method_ar": "تجميع مواقع لوقفات GPS متكررة مدتها دقيقتان فأكثر، ثم اختيار المواقع ذات 10 وقفات على الأقل، وثلاث حافلات على الأقل، ووسيط توقف أربع دقائق على الأقل. لا تُعد هذه أسماء أو قائمة رسمية للمحطات.",
+    "privacy_ar": "تعرض الخريطة أعدادًا مجمعة فقط؛ لا تُنشر معرفات الحافلات أو بيانات الدخول."
+  },
+  "stops": [
+    {
+      "id": "observed-01",
+      "lat": 35.73972,
+      "lon": 4.55065,
+      "stop_events": 45,
+      "bus_count": 18,
+      "total_dwell_minutes": 375.7,
+      "median_dwell_minutes": 7.8,
+      "longest_dwell_minutes": 17.0,
+      "first_seen": "2026-10-27T12:54:00+01:00",
+      "last_seen": "2026-10-27T18:50:00+01:00"
+    },
+    {
+      "id": "observed-02",
+      "lat": 35.69277,
+      "lon": 4.53528,
+      "stop_events": 22,
+      "bus_count": 7,
+      "total_dwell_minutes": 191.4,
+      "median_dwell_minutes": 8.0,
+      "longest_dwell_minutes": 16.5,
+      "first_seen": "2026-10-27T13:02:00+01:00",
+      "last_seen": "2026-10-27T18:46:00+01:00"
+    },
+    {
+      "id": "observed-03",
+      "lat": 35.69005,
+      "lon": 4.52845,
+      "stop_events": 19,
+      "bus_count": 3,
+      "total_dwell_minutes": 383.1,
+      "median_dwell_minutes": 6.5,
+      "longest_dwell_minutes": 182.4,
+      "first_seen": "2026-10-27T12:55:00+01:00",
+      "last_seen": "2026-10-27T18:50:00+01:00",
+      "long_dwell_note_ar": "سُجلت هنا وقفة طويلة جدًا؛ قد تكون انتظارًا أو ساحة تشغيل، وليست دليلًا وحده على محطة ركاب."
+    },
+    {
+      "id": "observed-04",
+      "lat": 35.70769,
+      "lon": 4.52029,
+      "stop_events": 17,
+      "bus_count": 7,
+      "total_dwell_minutes": 132.7,
+      "median_dwell_minutes": 6.5,
+      "longest_dwell_minutes": 18.9,
+      "first_seen": "2026-10-27T13:24:00+01:00",
+      "last_seen": "2026-10-27T17:59:00+01:00"
+    },
+    {
+      "id": "observed-05",
+      "lat": 35.73499,
+      "lon": 4.48996,
+      "stop_events": 14,
+      "bus_count": 6,
+      "total_dwell_minutes": 85.4,
+      "median_dwell_minutes": 5.5,
+      "longest_dwell_minutes": 12.5,
+      "first_seen": "2026-10-27T12:58:00+01:00",
+      "last_seen": "2026-10-27T17:45:00+01:00"
+    },
+    {
+      "id": "observed-06",
+      "lat": 35.69649,
+      "lon": 4.56734,
+      "stop_events": 12,
+      "bus_count": 5,
+      "total_dwell_minutes": 63.5,
+      "median_dwell_minutes": 4.0,
+      "longest_dwell_minutes": 12.3,
+      "first_seen": "2026-10-27T13:41:00+01:00",
+      "last_seen": "2026-10-27T18:35:00+01:00"
+    },
+    {
+      "id": "observed-07",
+      "lat": 35.73976,
+      "lon": 4.51969,
+      "stop_events": 11,
+      "bus_count": 5,
+      "total_dwell_minutes": 79.4,
+      "median_dwell_minutes": 7.0,
+      "longest_dwell_minutes": 13.5,
+      "first_seen": "2026-10-27T13:00:00+01:00",
+      "last_seen": "2026-10-27T18:35:00+01:00"
+    }
+  ]
+}
+

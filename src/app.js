@@ -267,8 +267,9 @@
   }
 
   /* ---------- 5. الخريطة: only normal viewport tile requests, no prefetch ---------- */
-  var map, tileLayer, busLayer, myLayer, routeLayer, histLayer, stLayer;
+  var map, tileLayer, busLayer, myLayer, routeLayer, histLayer, stLayer, observedStopLayer;
   var markers = {};
+  var observedStopData = null, observedStopsVisible = true;
   function initMap() {
     map = L.map('map', {
       center: cfg.center, zoom: cfg.zoom, minZoom: 8, maxZoom: 19,
@@ -283,6 +284,9 @@
     busLayer = L.layerGroup().addTo(map);
     myLayer = L.layerGroup().addTo(map);
     stLayer = L.layerGroup().addTo(map);
+    map.createPane('observedStopsPane');
+    map.getPane('observedStopsPane').style.zIndex = '630';
+    observedStopLayer = L.layerGroup().addTo(map);
     map.on('zoomend moveend', function() {
       state.cardMode = cardModeForZoom(map.getZoom());
       renderMarkers(); updateMapCount();
@@ -497,6 +501,86 @@
       icon: L.divIcon({ html: '<div class="stp"></div>', className: 'stmark', iconSize: [22, 22], iconAnchor: [11, 11] }),
       title: s.name || 'محطة التنبيه'
     }).addTo(stLayer).bindTooltip(' ' + esc(s.name || 'محطة التنبيه'), { direction: 'top', offset: [0, -14] });
+  }
+
+  function observedBusPhrase(count) {
+    var n = Number(count) || 0;
+    if (n === 1) return 'حافلة واحدة';
+    if (n === 2) return 'حافلتان مختلفتان';
+    if (n >= 3 && n <= 10) return fmtNum(n, 0) + ' حافلات مختلفة';
+    return fmtNum(n, 0) + ' حافلة مختلفة';
+  }
+
+  function observedStopPopup(stop, index) {
+    var first = String(stop.first_seen || '').slice(11, 16);
+    var last = String(stop.last_seen || '').slice(11, 16);
+    var longNote = stop.long_dwell_note_ar ? '<div class="stop-caveat">' + esc(stop.long_dwell_note_ar) + '</div>' : '';
+    var observation = observedStopData.observation;
+    var dateLabel = String(observation.date || '').split('-').reverse().join('/');
+    var gapCount = Array.isArray(observation.major_gaps) ? observation.major_gaps.length : 0;
+    var failedCount = Number(observation.failed_polls) || 0;
+    return '<div class="observed-stop-popup-content" dir="rtl">' +
+      '<strong>موقع توقف متكرر ' + (index + 1) + '</strong>' +
+      '<div>' + fmtNum(stop.stop_events, 0) + ' وقفة مرصودة من ' + observedBusPhrase(stop.bus_count) + '</div>' +
+      '<div>وسيط الوقفة: ' + fmtNum(stop.median_dwell_minutes, 1) + ' د · أطول مكوث: ' + fmtNum(stop.longest_dwell_minutes, 1) + ' د</div>' +
+      '<div>الإحداثيات: <bdi dir="ltr">' + Number(stop.lat).toFixed(5) + ', ' + Number(stop.lon).toFixed(5) + '</bdi></div>' +
+      '<div class="stop-evidence">رصد يوم ' + esc(dateLabel) + ' من ' + esc(first) + ' إلى ' + esc(last) + ' بتوقيت الجزائر. إجمالي العينة: ' + fmtNum(observation.successful_snapshots, 0) + ' قراءة؛ فجوات الرصد الكبيرة: ' + fmtNum(gapCount, 0) + '، والقراءات الفاشلة: ' + fmtNum(failedCount, 0) + '.</div>' +
+      '<div class="stop-caveat">هذا تجمّع لمواقع توقف GPS متكرر، وليس اسمًا أو تأكيدًا لمحطة رسمية ولا موعد وصول.</div>' +
+      longNote + '</div>';
+  }
+
+  function renderObservedStops() {
+    if (!observedStopLayer) return;
+    observedStopLayer.clearLayers();
+    if (!observedStopsVisible || !observedStopData || !Array.isArray(observedStopData.stops)) return;
+    observedStopData.stops.forEach(function(stop, index) {
+      if (!validPosition(Number(stop.lat), Number(stop.lon))) return;
+      var label = 'موقع توقف متكرر ' + (index + 1);
+      var icon = L.divIcon({
+        html: '<span class="obs-stop-pin" aria-hidden="true"></span>',
+        className: 'obs-stop-div', iconSize: [26, 28], iconAnchor: [13, 25]
+      });
+      var marker = L.marker([Number(stop.lat), Number(stop.lon)], {
+        pane: 'observedStopsPane', icon: icon, title: label, alt: label, keyboard: true, riseOnHover: true
+      });
+      marker.bindTooltip(esc(label) + ' · ' + fmtNum(stop.stop_events, 0) + ' وقفة · ' + observedBusPhrase(stop.bus_count), {
+        direction: 'top', offset: [0, -22], className: 'bustip'
+      });
+      marker.bindPopup(observedStopPopup(stop, index), { maxWidth: 300, className: 'observed-stop-popup' });
+      marker.addTo(observedStopLayer);
+    });
+  }
+
+  function loadObservedStops() {
+    var button = $('btnObservedStops');
+    button.disabled = true;
+    fetch('./data/observed_stops.json').then(function(response) {
+      if (!response.ok) throw new Error('HTTP_' + response.status);
+      return response.json();
+    }).then(function(data) {
+      if (!data || !data.observation || !Array.isArray(data.stops)) throw new Error('INVALID_STOP_DATA');
+      observedStopData = data;
+      button.disabled = false;
+      button.setAttribute('aria-label', 'إظهار أو إخفاء مواقع التوقف المرصودة (' + data.stops.length + ')');
+      button.title = 'إظهار أو إخفاء مواقع التوقف المرصودة (' + data.stops.length + ')';
+      renderObservedStops();
+    }).catch(function() {
+      log('warn', 'تعذّر تحميل مجموعة مواقع التوقف المرصودة');
+    });
+  }
+
+  function toggleObservedStops() {
+    if (!observedStopData) return;
+    observedStopsVisible = !observedStopsVisible;
+    $('btnObservedStops').setAttribute('aria-pressed', String(observedStopsVisible));
+    renderObservedStops();
+    if (observedStopsVisible && observedStopData.stops.length) {
+      var bounds = L.latLngBounds(observedStopData.stops.map(function(stop) { return [Number(stop.lat), Number(stop.lon)]; }));
+      map.fitBounds(bounds, { paddingTopLeft: [70, 90], paddingBottomRight: [70, 80], maxZoom: 14, animate: canAnimate() });
+      toast('أُظهرت مواقع التوقف المتكرر المرصودة', 'ok', 3200);
+    } else {
+      toast('أُخفيت مواقع التوقف المرصودة', 'ok', 2600);
+    }
   }
 
   /* ---------- 7. تتبّع المسار التاريخي ---------- */
@@ -1360,6 +1444,7 @@
     ['btnDisplay','btnMapDisplay','btnDisplayDock','performanceBadge'].forEach(function(id){$(id).onclick=openDisplay;});
     ['btnNear','btnMapLocate','btnLocateDock'].forEach(function(id){$(id).onclick=locateMe;});
     ['btnFit','btnMapFit','btnFitDock'].forEach(function(id){$(id).onclick=fitBuses;});
+    $('btnObservedStops').onclick=toggleObservedStops;
     $('btnFocus').onclick=toggleFocus;$('btnWideMap').onclick=toggleFocus;
     $('btnRetryTiles').onclick=function(){setTiles(true);};
     $('btnFullscreen').disabled=!document.documentElement.requestFullscreen;
@@ -1428,7 +1513,7 @@
     try{themeChoice=localStorage.getItem(LS_THEME)||'light';}catch(e){}
     setTheme(themeChoice,false);
     document.documentElement.dataset.performance=effectivePerformance();
-    initMap();wire();renderStation();
+    initMap();wire();renderStation();loadObservedStops();
     if(window.ResizeObserver)new ResizeObserver(updateChrome).observe($('appChrome'));
     updateChrome();applyDisplay();renderAll();
     log('info','بدء تشغيل الواجهة — لم تُضمّن أي بيانات دخول في التطبيق');

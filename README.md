@@ -24,3 +24,7 @@ The display settings offer automatic, balanced, strong-device, light, and ultra-
 - `tools/`: the project’s QA and upgrade helper scripts; these are optional and are not needed to run the site.
 
 This is a static-site source package; it does not include deployment credentials, hidden deployment state, or generated caches.
+
+## Observed stop locations
+
+`data/observed_stops.json` contains seven aggregate GPS stop clusters derived from read-only observations on 2026-10-27. The set contains 637 successful 30-second snapshots of 57 bus records and records the two major observation gaps and five failed reads. The map labels these as observed GPS stop locations, not official passenger stations or live arrival predictions. Bus identifiers and credentials are not included.

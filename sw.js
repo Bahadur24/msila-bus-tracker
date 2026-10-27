@@ -1,5 +1,5 @@
 /* Cache only the public app shell. Never cache credentials, API responses or map tiles. */
-var CACHE = 'msila-tracker-v4-20261027-observed-stops';
+var CACHE = 'msila-tracker-v4-20261028-nearby-replay-favorites';
 var ASSETS = ['./index.html', './src/styles.css', './src/app.js', './vendor/leaflet.css', './vendor/leaflet.js', './manifest.webmanifest', './icon.svg', './icon-192.png', './icon-512.png', './msila_routes.json', './data/observed_stops.json'];
 self.addEventListener('install', function(event) {
   event.waitUntil(caches.open(CACHE).then(function(cache) { return cache.addAll(ASSETS); }).then(function() { return self.skipWaiting(); }));

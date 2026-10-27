@@ -28,3 +28,11 @@ This is a static-site source package; it does not include deployment credentials
 ## Observed stop locations
 
 `data/observed_stops.json` contains seven aggregate GPS stop clusters derived from read-only observations on 2026-10-27. The set contains 637 successful 30-second snapshots of 57 bus records and records the two major observation gaps and five failed reads. The map labels these as observed GPS stop locations, not official passenger stations or live arrival predictions. Bus identifiers and credentials are not included.
+
+## Nearby search, estimates, favorites, and replay
+
+- Nearby search uses the browser's location permission and compares straight-line distances to fresh, online buses and the observed GPS clusters. Location is used in the page and is not sent to a separate service.
+- An arrival estimate is shown only when a bus has a recent position and a known GPS heading roughly toward the selected point. It divides straight-line distance by the current reported speed; it does not follow roads, account for traffic or dwell time, or represent an official timetable.
+- Movement replay uses positions collected while the page is open. In supported performance modes, up to one hour is retained on the same device in local browser storage; it is not uploaded to the tracking server.
+- Favorite stops, user-edited labels, and correction notes are stored locally in that browser. The static site has no server for receiving shared name corrections; the user can copy a suggestion to share it manually.
+- Favorite-stop alerts require live data and the page to remain open. Browser notifications are optional and require permission. GitHub Pages does not provide a background push service for alerts after the page is closed.

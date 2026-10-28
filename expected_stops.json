@@ -1,14 +1,2952 @@
 {
   "schema_version": 1,
-  "status": "collecting",
-  "notice": "الرصد جارٍ منذ أول عينة ناجحة؛ ستُضاف نقاط الوقوف المتوقعة بعد اكتمال النافذة وتحليلها. لا تُعرض هنا محطات رسمية.",
+  "status": "complete",
+  "notice": "هذه نقاط توقف افتراضية/متوقعة مستنتجة آليًا من الرصد وليست محطات رسمية؛ يُرجى التحقق منها ميدانيًا. بعض الزيارات من الجزء الأساسي لا تتوفر لها قياسات الفاصل الأقصى بين العينات.",
   "observation": {
     "requested_start": "2026-10-28T15:12:49+01:00",
     "actual_start": "2026-10-28T15:16:38+01:00",
     "first_success": "2026-10-28T15:16:38+01:00",
+    "last_success": "2026-10-28T16:16:40+01:00",
     "target_end": "2026-10-28T16:16:38+01:00",
-    "requested_interval_seconds": 3,
-    "minimum_dwell_seconds": 9
+    "actual_end": "2026-10-28T16:16:41+01:00",
+    "elapsed_span_seconds": 3602.0,
+    "coverage_seconds": 3595.0,
+    "coverage_gap_from_requested_start_seconds": 229.8,
+    "inter_segment_gap_seconds": 7.0,
+    "successful_cycles": 1103,
+    "failed_cycles": 0,
+    "estimated_expected_cycles": 1200,
+    "estimated_missed_cycles": 97,
+    "requested_interval_seconds": 3.0,
+    "mean_actual_cadence_seconds": 3.266,
+    "max_actual_cadence_seconds": 11.555,
+    "device_count_first_success": 57,
+    "segments": [
+      {
+        "name": "الرصد الأساسي",
+        "actual_start": "2026-10-28T15:16:38+01:00",
+        "first_sample": "2026-10-28T15:16:38+01:00",
+        "last_sample": "2026-10-28T16:12:48+01:00",
+        "actual_end": "2026-10-28T16:12:50+01:00",
+        "coverage_seconds": 3370.0,
+        "successful_cycles": 1027,
+        "failed_cycles": 0,
+        "mean_actual_cadence_seconds": 3.285,
+        "max_actual_cadence_seconds": 11.555,
+        "maximum_sample_gap_seconds": null
+      },
+      {
+        "name": "التمديد",
+        "actual_start": "2026-10-28T16:12:55+01:00",
+        "first_sample": "2026-10-28T16:12:55+01:00",
+        "last_sample": "2026-10-28T16:16:40+01:00",
+        "actual_end": "2026-10-28T16:16:41+01:00",
+        "coverage_seconds": 225.0,
+        "successful_cycles": 76,
+        "failed_cycles": 0,
+        "mean_actual_cadence_seconds": 3.0,
+        "max_actual_cadence_seconds": 3.003,
+        "maximum_sample_gap_seconds": 20.0
+      }
+    ],
+    "stop_confirmation_min_seconds": 9.0,
+    "stationary_radius_m": 65.0,
+    "stop_merge_radius_m": 100.0,
+    "maximum_consecutive_sample_gap_seconds": 20.0,
+    "gap_guard_applied_segments": [
+      "التمديد"
+    ],
+    "unverified_gap_events": 1199,
+    "excluded_suspicious_gap_events": 0,
+    "method": "اعتُبر الموقع توقفًا مرشحًا عند بقائه ضمن 65 م بسرعة منخفضة مدة 9 ثوانٍ على الأقل مع 4 عينات؛ واستُبعدت إشارات الموقع الأقدم من 5 دقائق، وجُمعت الزيارات ضمن 100 م. حدّ 20 ثانية بين العينات طُبّق في جزء التمديد فقط؛ الجزء الأساسي لا يسجل الفاصل الأقصى لكل زيارة، لذلك تظل بعض مدد التوقف تقديرية. جميع النقاط افتراضية وليست محطات رسمية."
   },
-  "stops": []
+  "stops": [
+    {
+      "label": "نقطة افتراضية 01",
+      "lat": 35.71404,
+      "lon": 4.52978,
+      "groups": [
+        "04",
+        "05",
+        "09",
+        "10",
+        "11",
+        "12",
+        "16",
+        "17",
+        "غير مصنف"
+      ],
+      "visits": 55,
+      "mean_dwell_seconds": 52.8,
+      "max_dwell_seconds": 168.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:16:38+01:00",
+      "last_seen": "2026-10-28T16:16:40+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 02",
+      "lat": 35.71756,
+      "lon": 4.52472,
+      "groups": [
+        "04",
+        "09",
+        "10",
+        "11",
+        "12",
+        "16",
+        "17",
+        "غير مصنف"
+      ],
+      "visits": 46,
+      "mean_dwell_seconds": 45.8,
+      "max_dwell_seconds": 156.5,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:18:47+01:00",
+      "last_seen": "2026-10-28T16:14:58+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 03",
+      "lat": 35.7199,
+      "lon": 4.5212,
+      "groups": [
+        "09",
+        "10",
+        "11",
+        "12",
+        "16",
+        "غير مصنف"
+      ],
+      "visits": 31,
+      "mean_dwell_seconds": 29.9,
+      "max_dwell_seconds": 69.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:17:09+01:00",
+      "last_seen": "2026-10-28T16:16:04+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 04",
+      "lat": 35.71091,
+      "lon": 4.53418,
+      "groups": [
+        "04",
+        "05",
+        "09",
+        "10",
+        "11",
+        "17",
+        "غير مصنف"
+      ],
+      "visits": 26,
+      "mean_dwell_seconds": 34.7,
+      "max_dwell_seconds": 78.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:16:38+01:00",
+      "last_seen": "2026-10-28T16:14:19+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 05",
+      "lat": 35.72404,
+      "lon": 4.51713,
+      "groups": [
+        "04",
+        "09",
+        "10",
+        "12",
+        "16",
+        "غير مصنف"
+      ],
+      "visits": 26,
+      "mean_dwell_seconds": 28.4,
+      "max_dwell_seconds": 60.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:17:02+01:00",
+      "last_seen": "2026-10-28T16:10:45+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 06",
+      "lat": 35.73966,
+      "lon": 4.55059,
+      "groups": [
+        "05",
+        "11",
+        "12",
+        "13",
+        "17",
+        "18",
+        "غير مصنف"
+      ],
+      "visits": 25,
+      "mean_dwell_seconds": 286.7,
+      "max_dwell_seconds": 1299.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:16:38+01:00",
+      "last_seen": "2026-10-28T16:11:48+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 07",
+      "lat": 35.69772,
+      "lon": 4.56177,
+      "groups": [
+        "04",
+        "05",
+        "16",
+        "غير مصنف"
+      ],
+      "visits": 25,
+      "mean_dwell_seconds": 112.7,
+      "max_dwell_seconds": 609.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:16:38+01:00",
+      "last_seen": "2026-10-28T16:16:40+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 08",
+      "lat": 35.70116,
+      "lon": 4.55108,
+      "groups": [
+        "04",
+        "05",
+        "16",
+        "18",
+        "غير مصنف"
+      ],
+      "visits": 24,
+      "mean_dwell_seconds": 30.5,
+      "max_dwell_seconds": 87.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:18:39+01:00",
+      "last_seen": "2026-10-28T16:15:07+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 09",
+      "lat": 35.73118,
+      "lon": 4.50815,
+      "groups": [
+        "04",
+        "10",
+        "12",
+        "16",
+        "غير مصنف"
+      ],
+      "visits": 24,
+      "mean_dwell_seconds": 40.5,
+      "max_dwell_seconds": 99.7,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:16:38+01:00",
+      "last_seen": "2026-10-28T16:16:40+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 10",
+      "lat": 35.70818,
+      "lon": 4.53795,
+      "groups": [
+        "04",
+        "05",
+        "10",
+        "11",
+        "17",
+        "غير مصنف"
+      ],
+      "visits": 21,
+      "mean_dwell_seconds": 83.7,
+      "max_dwell_seconds": 207.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:16:38+01:00",
+      "last_seen": "2026-10-28T16:07:45+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 11",
+      "lat": 35.70763,
+      "lon": 4.53873,
+      "groups": [
+        "04",
+        "05",
+        "11",
+        "17",
+        "غير مصنف"
+      ],
+      "visits": 21,
+      "mean_dwell_seconds": 77.6,
+      "max_dwell_seconds": 243.6,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:16:38+01:00",
+      "last_seen": "2026-10-28T16:16:28+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 12",
+      "lat": 35.70256,
+      "lon": 4.54625,
+      "groups": [
+        "04",
+        "05",
+        "16",
+        "18",
+        "غير مصنف"
+      ],
+      "visits": 18,
+      "mean_dwell_seconds": 53.5,
+      "max_dwell_seconds": 111.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:17:56+01:00",
+      "last_seen": "2026-10-28T16:06:33+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 13",
+      "lat": 35.7335,
+      "lon": 4.50453,
+      "groups": [
+        "04",
+        "10",
+        "12",
+        "16",
+        "غير مصنف"
+      ],
+      "visits": 18,
+      "mean_dwell_seconds": 41.5,
+      "max_dwell_seconds": 168.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:16:44+01:00",
+      "last_seen": "2026-10-28T16:14:28+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 14",
+      "lat": 35.69945,
+      "lon": 4.55477,
+      "groups": [
+        "04",
+        "05",
+        "16",
+        "غير مصنف"
+      ],
+      "visits": 17,
+      "mean_dwell_seconds": 32.5,
+      "max_dwell_seconds": 90.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:21:13+01:00",
+      "last_seen": "2026-10-28T16:15:19+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 15",
+      "lat": 35.69275,
+      "lon": 4.53532,
+      "groups": [
+        "10",
+        "13",
+        "غير مصنف"
+      ],
+      "visits": 17,
+      "mean_dwell_seconds": 283.2,
+      "max_dwell_seconds": 936.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:16:38+01:00",
+      "last_seen": "2026-10-28T16:16:40+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 16",
+      "lat": 35.71256,
+      "lon": 4.53194,
+      "groups": [
+        "04",
+        "05",
+        "09",
+        "11",
+        "12",
+        "17",
+        "غير مصنف"
+      ],
+      "visits": 16,
+      "mean_dwell_seconds": 37.0,
+      "max_dwell_seconds": 51.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:16:38+01:00",
+      "last_seen": "2026-10-28T16:14:40+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 17",
+      "lat": 35.70181,
+      "lon": 4.54893,
+      "groups": [
+        "04",
+        "05",
+        "16",
+        "غير مصنف"
+      ],
+      "visits": 16,
+      "mean_dwell_seconds": 27.4,
+      "max_dwell_seconds": 43.9,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:20:07+01:00",
+      "last_seen": "2026-10-28T16:16:25+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 18",
+      "lat": 35.7325,
+      "lon": 4.54967,
+      "groups": [
+        "05",
+        "11",
+        "12",
+        "13",
+        "17",
+        "غير مصنف"
+      ],
+      "visits": 15,
+      "mean_dwell_seconds": 18.5,
+      "max_dwell_seconds": 36.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:17:21+01:00",
+      "last_seen": "2026-10-28T16:15:43+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 19",
+      "lat": 35.69864,
+      "lon": 4.55809,
+      "groups": [
+        "04",
+        "05",
+        "16",
+        "غير مصنف"
+      ],
+      "visits": 15,
+      "mean_dwell_seconds": 28.0,
+      "max_dwell_seconds": 64.7,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:18:27+01:00",
+      "last_seen": "2026-10-28T16:16:13+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 20",
+      "lat": 35.70712,
+      "lon": 4.53731,
+      "groups": [
+        "09",
+        "10",
+        "13",
+        "غير مصنف"
+      ],
+      "visits": 15,
+      "mean_dwell_seconds": 80.2,
+      "max_dwell_seconds": 157.7,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:16:38+01:00",
+      "last_seen": "2026-10-28T16:13:10+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 21",
+      "lat": 35.73289,
+      "lon": 4.50574,
+      "groups": [
+        "04",
+        "10",
+        "12",
+        "16",
+        "غير مصنف"
+      ],
+      "visits": 14,
+      "mean_dwell_seconds": 30.5,
+      "max_dwell_seconds": 102.9,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:17:37+01:00",
+      "last_seen": "2026-10-28T16:15:16+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 22",
+      "lat": 35.70768,
+      "lon": 4.52027,
+      "groups": [
+        "11",
+        "13",
+        "16",
+        "غير مصنف"
+      ],
+      "visits": 14,
+      "mean_dwell_seconds": 290.8,
+      "max_dwell_seconds": 807.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:16:38+01:00",
+      "last_seen": "2026-10-28T16:16:40+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 23",
+      "lat": 35.72783,
+      "lon": 4.51294,
+      "groups": [
+        "04",
+        "09",
+        "10",
+        "12",
+        "16",
+        "غير مصنف"
+      ],
+      "visits": 13,
+      "mean_dwell_seconds": 25.9,
+      "max_dwell_seconds": 39.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:17:00+01:00",
+      "last_seen": "2026-10-28T16:13:46+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 24",
+      "lat": 35.72703,
+      "lon": 4.51364,
+      "groups": [
+        "09",
+        "10",
+        "12",
+        "16",
+        "غير مصنف"
+      ],
+      "visits": 13,
+      "mean_dwell_seconds": 31.3,
+      "max_dwell_seconds": 102.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:19:29+01:00",
+      "last_seen": "2026-10-28T16:15:34+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 25",
+      "lat": 35.73513,
+      "lon": 4.49521,
+      "groups": [
+        "04",
+        "12",
+        "16",
+        "غير مصنف"
+      ],
+      "visits": 13,
+      "mean_dwell_seconds": 28.1,
+      "max_dwell_seconds": 48.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:17:00+01:00",
+      "last_seen": "2026-10-28T16:13:46+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 26",
+      "lat": 35.70604,
+      "lon": 4.54096,
+      "groups": [
+        "04",
+        "05",
+        "11",
+        "17",
+        "غير مصنف"
+      ],
+      "visits": 12,
+      "mean_dwell_seconds": 37.3,
+      "max_dwell_seconds": 79.1,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:19:29+01:00",
+      "last_seen": "2026-10-28T16:08:27+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 27",
+      "lat": 35.70934,
+      "lon": 4.53637,
+      "groups": [
+        "04",
+        "05",
+        "11",
+        "17",
+        "غير مصنف"
+      ],
+      "visits": 12,
+      "mean_dwell_seconds": 42.5,
+      "max_dwell_seconds": 60.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:19:31+01:00",
+      "last_seen": "2026-10-28T16:16:40+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 28",
+      "lat": 35.73038,
+      "lon": 4.50947,
+      "groups": [
+        "04",
+        "09",
+        "16",
+        "غير مصنف"
+      ],
+      "visits": 12,
+      "mean_dwell_seconds": 26.8,
+      "max_dwell_seconds": 39.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:21:57+01:00",
+      "last_seen": "2026-10-28T16:15:07+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 29",
+      "lat": 35.7347,
+      "lon": 4.49748,
+      "groups": [
+        "04",
+        "12",
+        "16",
+        "غير مصنف"
+      ],
+      "visits": 12,
+      "mean_dwell_seconds": 31.7,
+      "max_dwell_seconds": 69.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:18:27+01:00",
+      "last_seen": "2026-10-28T16:15:46+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 30",
+      "lat": 35.72754,
+      "lon": 4.49749,
+      "groups": [
+        "09",
+        "10"
+      ],
+      "visits": 12,
+      "mean_dwell_seconds": 238.2,
+      "max_dwell_seconds": 1212.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:31:10+01:00",
+      "last_seen": "2026-10-28T16:16:40+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 31",
+      "lat": 35.72074,
+      "lon": 4.52035,
+      "groups": [
+        "04",
+        "09",
+        "12",
+        "16",
+        "غير مصنف"
+      ],
+      "visits": 11,
+      "mean_dwell_seconds": 36.7,
+      "max_dwell_seconds": 60.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:23:58+01:00",
+      "last_seen": "2026-10-28T16:16:13+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 32",
+      "lat": 35.69643,
+      "lon": 4.5675,
+      "groups": [
+        "04",
+        "05",
+        "16",
+        "غير مصنف"
+      ],
+      "visits": 11,
+      "mean_dwell_seconds": 293.1,
+      "max_dwell_seconds": 623.3,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:16:38+01:00",
+      "last_seen": "2026-10-28T16:16:28+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 33",
+      "lat": 35.70568,
+      "lon": 4.54677,
+      "groups": [
+        "11",
+        "17",
+        "18",
+        "غير مصنف"
+      ],
+      "visits": 11,
+      "mean_dwell_seconds": 34.7,
+      "max_dwell_seconds": 51.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:21:57+01:00",
+      "last_seen": "2026-10-28T16:16:04+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 34",
+      "lat": 35.71362,
+      "lon": 4.5484,
+      "groups": [
+        "11",
+        "17",
+        "غير مصنف"
+      ],
+      "visits": 11,
+      "mean_dwell_seconds": 46.0,
+      "max_dwell_seconds": 77.4,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:17:57+01:00",
+      "last_seen": "2026-10-28T16:12:06+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 35",
+      "lat": 35.7351,
+      "lon": 4.48981,
+      "groups": [
+        "04",
+        "12",
+        "غير مصنف"
+      ],
+      "visits": 11,
+      "mean_dwell_seconds": 69.1,
+      "max_dwell_seconds": 337.1,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:17:56+01:00",
+      "last_seen": "2026-10-28T16:14:13+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 36",
+      "lat": 35.71449,
+      "lon": 4.52908,
+      "groups": [
+        "09",
+        "10",
+        "16",
+        "17",
+        "غير مصنف"
+      ],
+      "visits": 10,
+      "mean_dwell_seconds": 14.4,
+      "max_dwell_seconds": 21.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:40:21+01:00",
+      "last_seen": "2026-10-28T16:15:01+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 37",
+      "lat": 35.70298,
+      "lon": 4.53794,
+      "groups": [
+        "09",
+        "10",
+        "13",
+        "غير مصنف"
+      ],
+      "visits": 10,
+      "mean_dwell_seconds": 33.1,
+      "max_dwell_seconds": 81.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:27:09+01:00",
+      "last_seen": "2026-10-28T16:15:01+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 38",
+      "lat": 35.70791,
+      "lon": 4.52612,
+      "groups": [
+        "11",
+        "13",
+        "16",
+        "غير مصنف"
+      ],
+      "visits": 10,
+      "mean_dwell_seconds": 22.3,
+      "max_dwell_seconds": 43.2,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:18:39+01:00",
+      "last_seen": "2026-10-28T16:15:49+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 39",
+      "lat": 35.73302,
+      "lon": 4.53436,
+      "groups": [
+        "17",
+        "غير مصنف"
+      ],
+      "visits": 10,
+      "mean_dwell_seconds": 35.2,
+      "max_dwell_seconds": 89.3,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:21:10+01:00",
+      "last_seen": "2026-10-28T16:12:03+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 40",
+      "lat": 35.71001,
+      "lon": 4.53541,
+      "groups": [
+        "04",
+        "05",
+        "11",
+        "17",
+        "غير مصنف"
+      ],
+      "visits": 9,
+      "mean_dwell_seconds": 29.7,
+      "max_dwell_seconds": 54.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:17:42+01:00",
+      "last_seen": "2026-10-28T16:15:58+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 41",
+      "lat": 35.70025,
+      "lon": 4.53839,
+      "groups": [
+        "09",
+        "10",
+        "13",
+        "غير مصنف"
+      ],
+      "visits": 9,
+      "mean_dwell_seconds": 29.6,
+      "max_dwell_seconds": 48.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:22:09+01:00",
+      "last_seen": "2026-10-28T16:03:39+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 42",
+      "lat": 35.72242,
+      "lon": 4.55021,
+      "groups": [
+        "11",
+        "17",
+        "18",
+        "غير مصنف"
+      ],
+      "visits": 9,
+      "mean_dwell_seconds": 32.4,
+      "max_dwell_seconds": 81.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:18:13+01:00",
+      "last_seen": "2026-10-28T16:05:54+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 43",
+      "lat": 35.7284,
+      "lon": 4.54953,
+      "groups": [
+        "11",
+        "13",
+        "17",
+        "غير مصنف"
+      ],
+      "visits": 9,
+      "mean_dwell_seconds": 14.5,
+      "max_dwell_seconds": 21.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:18:06+01:00",
+      "last_seen": "2026-10-28T16:02:24+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 44",
+      "lat": 35.69511,
+      "lon": 4.53806,
+      "groups": [
+        "09",
+        "13",
+        "غير مصنف"
+      ],
+      "visits": 9,
+      "mean_dwell_seconds": 25.5,
+      "max_dwell_seconds": 50.3,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:18:59+01:00",
+      "last_seen": "2026-10-28T16:00:51+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 45",
+      "lat": 35.70749,
+      "lon": 4.52303,
+      "groups": [
+        "11",
+        "13",
+        "16"
+      ],
+      "visits": 9,
+      "mean_dwell_seconds": 22.3,
+      "max_dwell_seconds": 39.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:17:05+01:00",
+      "last_seen": "2026-10-28T16:12:18+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 46",
+      "lat": 35.71177,
+      "lon": 4.54802,
+      "groups": [
+        "11",
+        "17",
+        "غير مصنف"
+      ],
+      "visits": 9,
+      "mean_dwell_seconds": 32.0,
+      "max_dwell_seconds": 51.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:26:12+01:00",
+      "last_seen": "2026-10-28T16:14:52+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 47",
+      "lat": 35.7188,
+      "lon": 4.5234,
+      "groups": [
+        "11",
+        "17",
+        "غير مصنف"
+      ],
+      "visits": 9,
+      "mean_dwell_seconds": 24.9,
+      "max_dwell_seconds": 48.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:20:51+01:00",
+      "last_seen": "2026-10-28T16:14:13+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 48",
+      "lat": 35.72004,
+      "lon": 4.54971,
+      "groups": [
+        "11",
+        "17",
+        "غير مصنف"
+      ],
+      "visits": 9,
+      "mean_dwell_seconds": 19.6,
+      "max_dwell_seconds": 30.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:27:09+01:00",
+      "last_seen": "2026-10-28T16:08:42+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 49",
+      "lat": 35.7292,
+      "lon": 4.54285,
+      "groups": [
+        "05",
+        "12",
+        "غير مصنف"
+      ],
+      "visits": 9,
+      "mean_dwell_seconds": 25.1,
+      "max_dwell_seconds": 42.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:17:50+01:00",
+      "last_seen": "2026-10-28T16:15:31+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 50",
+      "lat": 35.72957,
+      "lon": 4.54685,
+      "groups": [
+        "05",
+        "12",
+        "غير مصنف"
+      ],
+      "visits": 9,
+      "mean_dwell_seconds": 31.6,
+      "max_dwell_seconds": 108.1,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:19:22+01:00",
+      "last_seen": "2026-10-28T16:14:04+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 51",
+      "lat": 35.72957,
+      "lon": 4.53254,
+      "groups": [
+        "17",
+        "غير مصنف"
+      ],
+      "visits": 9,
+      "mean_dwell_seconds": 23.8,
+      "max_dwell_seconds": 42.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:19:18+01:00",
+      "last_seen": "2026-10-28T16:13:43+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 52",
+      "lat": 35.7153,
+      "lon": 4.54882,
+      "groups": [
+        "11",
+        "17",
+        "18",
+        "غير مصنف"
+      ],
+      "visits": 8,
+      "mean_dwell_seconds": 28.3,
+      "max_dwell_seconds": 48.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:22:57+01:00",
+      "last_seen": "2026-10-28T16:06:45+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 53",
+      "lat": 35.70372,
+      "lon": 4.546,
+      "groups": [
+        "11",
+        "17",
+        "غير مصنف"
+      ],
+      "visits": 8,
+      "mean_dwell_seconds": 41.2,
+      "max_dwell_seconds": 90.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:23:30+01:00",
+      "last_seen": "2026-10-28T16:15:16+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 54",
+      "lat": 35.71678,
+      "lon": 4.54903,
+      "groups": [
+        "11",
+        "17",
+        "غير مصنف"
+      ],
+      "visits": 8,
+      "mean_dwell_seconds": 41.0,
+      "max_dwell_seconds": 102.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:20:51+01:00",
+      "last_seen": "2026-10-28T16:08:54+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 55",
+      "lat": 35.70227,
+      "lon": 4.52214,
+      "groups": [
+        "11",
+        "غير مصنف"
+      ],
+      "visits": 8,
+      "mean_dwell_seconds": 27.7,
+      "max_dwell_seconds": 51.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:22:09+01:00",
+      "last_seen": "2026-10-28T16:12:39+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 56",
+      "lat": 35.7045,
+      "lon": 4.52528,
+      "groups": [
+        "11",
+        "غير مصنف"
+      ],
+      "visits": 8,
+      "mean_dwell_seconds": 31.1,
+      "max_dwell_seconds": 99.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:23:52+01:00",
+      "last_seen": "2026-10-28T16:15:28+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 57",
+      "lat": 35.7107,
+      "lon": 4.51805,
+      "groups": [
+        "11",
+        "غير مصنف"
+      ],
+      "visits": 8,
+      "mean_dwell_seconds": 29.6,
+      "max_dwell_seconds": 48.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:18:19+01:00",
+      "last_seen": "2026-10-28T16:09:51+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 58",
+      "lat": 35.72527,
+      "lon": 4.5302,
+      "groups": [
+        "17",
+        "غير مصنف"
+      ],
+      "visits": 8,
+      "mean_dwell_seconds": 27.2,
+      "max_dwell_seconds": 42.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:17:09+01:00",
+      "last_seen": "2026-10-28T16:16:04+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 59",
+      "lat": 35.72874,
+      "lon": 4.50695,
+      "groups": [
+        "09"
+      ],
+      "visits": 8,
+      "mean_dwell_seconds": 28.8,
+      "max_dwell_seconds": 51.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:23:52+01:00",
+      "last_seen": "2026-10-28T16:12:24+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 60",
+      "lat": 35.72645,
+      "lon": 4.51454,
+      "groups": [
+        "04",
+        "09",
+        "10",
+        "12",
+        "16",
+        "غير مصنف"
+      ],
+      "visits": 7,
+      "mean_dwell_seconds": 21.2,
+      "max_dwell_seconds": 39.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:19:42+01:00",
+      "last_seen": "2026-10-28T16:12:36+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 61",
+      "lat": 35.73092,
+      "lon": 4.54938,
+      "groups": [
+        "05",
+        "11",
+        "13",
+        "18",
+        "غير مصنف"
+      ],
+      "visits": 7,
+      "mean_dwell_seconds": 23.0,
+      "max_dwell_seconds": 51.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:19:15+01:00",
+      "last_seen": "2026-10-28T16:16:04+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 62",
+      "lat": 35.71119,
+      "lon": 4.53386,
+      "groups": [
+        "04",
+        "05",
+        "11",
+        "غير مصنف"
+      ],
+      "visits": 7,
+      "mean_dwell_seconds": 43.7,
+      "max_dwell_seconds": 138.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:37:24+01:00",
+      "last_seen": "2026-10-28T16:13:10+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 63",
+      "lat": 35.71291,
+      "lon": 4.53132,
+      "groups": [
+        "11",
+        "12",
+        "17",
+        "غير مصنف"
+      ],
+      "visits": 7,
+      "mean_dwell_seconds": 32.2,
+      "max_dwell_seconds": 48.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:29:29+01:00",
+      "last_seen": "2026-10-28T16:12:48+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 64",
+      "lat": 35.70307,
+      "lon": 4.54551,
+      "groups": [
+        "04",
+        "11",
+        "غير مصنف"
+      ],
+      "visits": 7,
+      "mean_dwell_seconds": 15.9,
+      "max_dwell_seconds": 42.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:34:00+01:00",
+      "last_seen": "2026-10-28T16:11:03+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 65",
+      "lat": 35.70779,
+      "lon": 4.52531,
+      "groups": [
+        "11",
+        "16",
+        "غير مصنف"
+      ],
+      "visits": 7,
+      "mean_dwell_seconds": 17.0,
+      "max_dwell_seconds": 30.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:20:16+01:00",
+      "last_seen": "2026-10-28T16:07:45+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 66",
+      "lat": 35.70816,
+      "lon": 4.52914,
+      "groups": [
+        "13",
+        "16",
+        "غير مصنف"
+      ],
+      "visits": 7,
+      "mean_dwell_seconds": 24.5,
+      "max_dwell_seconds": 54.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:20:16+01:00",
+      "last_seen": "2026-10-28T16:12:48+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 67",
+      "lat": 35.7036,
+      "lon": 4.53792,
+      "groups": [
+        "09",
+        "10",
+        "13",
+        "غير مصنف"
+      ],
+      "visits": 6,
+      "mean_dwell_seconds": 44.1,
+      "max_dwell_seconds": 94.4,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:16:50+01:00",
+      "last_seen": "2026-10-28T16:06:12+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 68",
+      "lat": 35.70433,
+      "lon": 4.53757,
+      "groups": [
+        "09",
+        "10",
+        "16",
+        "غير مصنف"
+      ],
+      "visits": 6,
+      "mean_dwell_seconds": 21.3,
+      "max_dwell_seconds": 39.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:26:20+01:00",
+      "last_seen": "2026-10-28T16:14:10+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 69",
+      "lat": 35.69612,
+      "lon": 4.53824,
+      "groups": [
+        "10",
+        "13",
+        "غير مصنف"
+      ],
+      "visits": 6,
+      "mean_dwell_seconds": 20.5,
+      "max_dwell_seconds": 30.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:40:39+01:00",
+      "last_seen": "2026-10-28T16:09:06+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 70",
+      "lat": 35.7051,
+      "lon": 4.53185,
+      "groups": [
+        "13",
+        "16",
+        "غير مصنف"
+      ],
+      "visits": 6,
+      "mean_dwell_seconds": 39.1,
+      "max_dwell_seconds": 45.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:23:21+01:00",
+      "last_seen": "2026-10-28T16:14:34+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 71",
+      "lat": 35.70863,
+      "lon": 4.53725,
+      "groups": [
+        "04",
+        "13",
+        "غير مصنف"
+      ],
+      "visits": 6,
+      "mean_dwell_seconds": 34.0,
+      "max_dwell_seconds": 48.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:37:30+01:00",
+      "last_seen": "2026-10-28T16:09:51+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 72",
+      "lat": 35.72679,
+      "lon": 4.54993,
+      "groups": [
+        "11",
+        "17",
+        "غير مصنف"
+      ],
+      "visits": 6,
+      "mean_dwell_seconds": 25.2,
+      "max_dwell_seconds": 39.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:24:27+01:00",
+      "last_seen": "2026-10-28T16:12:24+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 73",
+      "lat": 35.72684,
+      "lon": 4.53789,
+      "groups": [
+        "05",
+        "12",
+        "غير مصنف"
+      ],
+      "visits": 6,
+      "mean_dwell_seconds": 28.2,
+      "max_dwell_seconds": 57.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:23:46+01:00",
+      "last_seen": "2026-10-28T16:13:07+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 74",
+      "lat": 35.70274,
+      "lon": 4.53166,
+      "groups": [
+        "13",
+        "غير مصنف"
+      ],
+      "visits": 6,
+      "mean_dwell_seconds": 26.1,
+      "max_dwell_seconds": 61.6,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:18:06+01:00",
+      "last_seen": "2026-10-28T16:09:00+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 75",
+      "lat": 35.71571,
+      "lon": 4.51831,
+      "groups": [
+        "11",
+        "غير مصنف"
+      ],
+      "visits": 6,
+      "mean_dwell_seconds": 18.1,
+      "max_dwell_seconds": 30.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:33:36+01:00",
+      "last_seen": "2026-10-28T16:12:06+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 76",
+      "lat": 35.71796,
+      "lon": 4.51909,
+      "groups": [
+        "11",
+        "غير مصنف"
+      ],
+      "visits": 6,
+      "mean_dwell_seconds": 28.2,
+      "max_dwell_seconds": 39.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:32:22+01:00",
+      "last_seen": "2026-10-28T16:05:09+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 77",
+      "lat": 35.72307,
+      "lon": 4.53484,
+      "groups": [
+        "05",
+        "غير مصنف"
+      ],
+      "visits": 6,
+      "mean_dwell_seconds": 95.4,
+      "max_dwell_seconds": 292.5,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:26:12+01:00",
+      "last_seen": "2026-10-28T16:07:51+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 78",
+      "lat": 35.72529,
+      "lon": 4.49585,
+      "groups": [
+        "10",
+        "غير مصنف"
+      ],
+      "visits": 6,
+      "mean_dwell_seconds": 366.2,
+      "max_dwell_seconds": 639.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:16:38+01:00",
+      "last_seen": "2026-10-28T16:16:40+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 79",
+      "lat": 35.73649,
+      "lon": 4.51618,
+      "groups": [
+        "17",
+        "غير مصنف"
+      ],
+      "visits": 6,
+      "mean_dwell_seconds": 20.4,
+      "max_dwell_seconds": 30.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:31:38+01:00",
+      "last_seen": "2026-10-28T16:15:58+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 80",
+      "lat": 35.73808,
+      "lon": 4.53019,
+      "groups": [
+        "17",
+        "غير مصنف"
+      ],
+      "visits": 6,
+      "mean_dwell_seconds": 21.4,
+      "max_dwell_seconds": 30.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:28:07+01:00",
+      "last_seen": "2026-10-28T16:06:54+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 81",
+      "lat": 35.7278,
+      "lon": 4.50595,
+      "groups": [
+        "09"
+      ],
+      "visits": 6,
+      "mean_dwell_seconds": 38.9,
+      "max_dwell_seconds": 120.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:25:00+01:00",
+      "last_seen": "2026-10-28T16:10:33+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 82",
+      "lat": 35.70143,
+      "lon": 4.55009,
+      "groups": [
+        "04",
+        "05",
+        "16",
+        "غير مصنف"
+      ],
+      "visits": 5,
+      "mean_dwell_seconds": 17.7,
+      "max_dwell_seconds": 22.4,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:27:14+01:00",
+      "last_seen": "2026-10-28T16:08:06+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 83",
+      "lat": 35.71768,
+      "lon": 4.54929,
+      "groups": [
+        "11",
+        "17",
+        "18",
+        "غير مصنف"
+      ],
+      "visits": 5,
+      "mean_dwell_seconds": 24.2,
+      "max_dwell_seconds": 39.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:30:22+01:00",
+      "last_seen": "2026-10-28T16:15:19+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 84",
+      "lat": 35.73361,
+      "lon": 4.54981,
+      "groups": [
+        "05",
+        "11",
+        "12",
+        "غير مصنف"
+      ],
+      "visits": 5,
+      "mean_dwell_seconds": 22.7,
+      "max_dwell_seconds": 30.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:18:33+01:00",
+      "last_seen": "2026-10-28T16:13:31+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 85",
+      "lat": 35.70214,
+      "lon": 4.54773,
+      "groups": [
+        "04",
+        "16",
+        "غير مصنف"
+      ],
+      "visits": 5,
+      "mean_dwell_seconds": 15.9,
+      "max_dwell_seconds": 30.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:33:27+01:00",
+      "last_seen": "2026-10-28T16:06:06+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 86",
+      "lat": 35.72782,
+      "lon": 4.53989,
+      "groups": [
+        "05",
+        "12",
+        "غير مصنف"
+      ],
+      "visits": 5,
+      "mean_dwell_seconds": 39.3,
+      "max_dwell_seconds": 72.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:22:26+01:00",
+      "last_seen": "2026-10-28T16:11:48+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 87",
+      "lat": 35.72981,
+      "lon": 4.54426,
+      "groups": [
+        "05",
+        "12",
+        "غير مصنف"
+      ],
+      "visits": 5,
+      "mean_dwell_seconds": 29.2,
+      "max_dwell_seconds": 45.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:20:33+01:00",
+      "last_seen": "2026-10-28T16:08:48+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 88",
+      "lat": 35.68969,
+      "lon": 4.52791,
+      "groups": [
+        "11",
+        "17"
+      ],
+      "visits": 5,
+      "mean_dwell_seconds": 717.4,
+      "max_dwell_seconds": 2625.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:27:50+01:00",
+      "last_seen": "2026-10-28T16:16:40+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 89",
+      "lat": 35.69773,
+      "lon": 4.5372,
+      "groups": [
+        "13",
+        "غير مصنف"
+      ],
+      "visits": 5,
+      "mean_dwell_seconds": 16.1,
+      "max_dwell_seconds": 21.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:25:26+01:00",
+      "last_seen": "2026-10-28T16:08:06+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 90",
+      "lat": 35.69791,
+      "lon": 4.53868,
+      "groups": [
+        "10",
+        "غير مصنف"
+      ],
+      "visits": 5,
+      "mean_dwell_seconds": 55.0,
+      "max_dwell_seconds": 102.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:29:29+01:00",
+      "last_seen": "2026-10-28T16:02:09+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 91",
+      "lat": 35.70737,
+      "lon": 4.51849,
+      "groups": [
+        "11",
+        "غير مصنف"
+      ],
+      "visits": 5,
+      "mean_dwell_seconds": 18.6,
+      "max_dwell_seconds": 24.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:37:54+01:00",
+      "last_seen": "2026-10-28T16:09:48+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 92",
+      "lat": 35.71018,
+      "lon": 4.53816,
+      "groups": [
+        "13",
+        "غير مصنف"
+      ],
+      "visits": 5,
+      "mean_dwell_seconds": 152.4,
+      "max_dwell_seconds": 300.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:43:48+01:00",
+      "last_seen": "2026-10-28T16:09:33+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 93",
+      "lat": 35.71379,
+      "lon": 4.518,
+      "groups": [
+        "11",
+        "غير مصنف"
+      ],
+      "visits": 5,
+      "mean_dwell_seconds": 24.1,
+      "max_dwell_seconds": 42.6,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:16:38+01:00",
+      "last_seen": "2026-10-28T16:06:51+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 94",
+      "lat": 35.72258,
+      "lon": 4.52758,
+      "groups": [
+        "17",
+        "غير مصنف"
+      ],
+      "visits": 5,
+      "mean_dwell_seconds": 21.3,
+      "max_dwell_seconds": 43.9,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:22:51+01:00",
+      "last_seen": "2026-10-28T16:04:39+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 95",
+      "lat": 35.72393,
+      "lon": 4.53867,
+      "groups": [
+        "12",
+        "غير مصنف"
+      ],
+      "visits": 5,
+      "mean_dwell_seconds": 19.3,
+      "max_dwell_seconds": 39.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:28:34+01:00",
+      "last_seen": "2026-10-28T16:15:46+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 96",
+      "lat": 35.73783,
+      "lon": 4.52692,
+      "groups": [
+        "17",
+        "غير مصنف"
+      ],
+      "visits": 5,
+      "mean_dwell_seconds": 18.3,
+      "max_dwell_seconds": 26.1,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:29:03+01:00",
+      "last_seen": "2026-10-28T16:07:06+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 97",
+      "lat": 35.73853,
+      "lon": 4.53466,
+      "groups": [
+        "17",
+        "غير مصنف"
+      ],
+      "visits": 5,
+      "mean_dwell_seconds": 22.4,
+      "max_dwell_seconds": 34.1,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:26:12+01:00",
+      "last_seen": "2026-10-28T16:16:10+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 98",
+      "lat": 35.73876,
+      "lon": 4.53725,
+      "groups": [
+        "17",
+        "غير مصنف"
+      ],
+      "visits": 5,
+      "mean_dwell_seconds": 19.1,
+      "max_dwell_seconds": 24.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:25:26+01:00",
+      "last_seen": "2026-10-28T16:15:10+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 99",
+      "lat": 35.73914,
+      "lon": 4.51418,
+      "groups": [
+        "17",
+        "غير مصنف"
+      ],
+      "visits": 5,
+      "mean_dwell_seconds": 25.6,
+      "max_dwell_seconds": 51.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:32:49+01:00",
+      "last_seen": "2026-10-28T16:14:43+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 100",
+      "lat": 35.73973,
+      "lon": 4.51871,
+      "groups": [
+        "17",
+        "غير مصنف"
+      ],
+      "visits": 5,
+      "mean_dwell_seconds": 19.2,
+      "max_dwell_seconds": 39.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:35:09+01:00",
+      "last_seen": "2026-10-28T16:11:54+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 101",
+      "lat": 35.73985,
+      "lon": 4.51997,
+      "groups": [
+        "17",
+        "غير مصنف"
+      ],
+      "visits": 5,
+      "mean_dwell_seconds": 472.2,
+      "max_dwell_seconds": 1131.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:35:48+01:00",
+      "last_seen": "2026-10-28T16:16:40+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 102",
+      "lat": 35.72685,
+      "lon": 4.49901,
+      "groups": [
+        "09"
+      ],
+      "visits": 5,
+      "mean_dwell_seconds": 16.7,
+      "max_dwell_seconds": 21.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:30:01+01:00",
+      "last_seen": "2026-10-28T15:48:48+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 103",
+      "lat": 35.7007,
+      "lon": 4.55124,
+      "groups": [
+        "04",
+        "05",
+        "16"
+      ],
+      "visits": 4,
+      "mean_dwell_seconds": 18.0,
+      "max_dwell_seconds": 30.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:37:21+01:00",
+      "last_seen": "2026-10-28T15:51:24+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 104",
+      "lat": 35.72738,
+      "lon": 4.539,
+      "groups": [
+        "05",
+        "12",
+        "غير مصنف"
+      ],
+      "visits": 4,
+      "mean_dwell_seconds": 28.9,
+      "max_dwell_seconds": 63.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:16:38+01:00",
+      "last_seen": "2026-10-28T16:13:10+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 105",
+      "lat": 35.69675,
+      "lon": 4.53851,
+      "groups": [
+        "13",
+        "غير مصنف"
+      ],
+      "visits": 4,
+      "mean_dwell_seconds": 51.8,
+      "max_dwell_seconds": 68.1,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:21:10+01:00",
+      "last_seen": "2026-10-28T16:03:30+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 106",
+      "lat": 35.71367,
+      "lon": 4.5325,
+      "groups": [
+        "12",
+        "غير مصنف"
+      ],
+      "visits": 4,
+      "mean_dwell_seconds": 28.5,
+      "max_dwell_seconds": 51.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:34:15+01:00",
+      "last_seen": "2026-10-28T16:16:01+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 107",
+      "lat": 35.71595,
+      "lon": 4.53417,
+      "groups": [
+        "12",
+        "غير مصنف"
+      ],
+      "visits": 4,
+      "mean_dwell_seconds": 29.2,
+      "max_dwell_seconds": 48.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:35:24+01:00",
+      "last_seen": "2026-10-28T16:03:09+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 108",
+      "lat": 35.71682,
+      "lon": 4.52591,
+      "groups": [
+        "11",
+        "غير مصنف"
+      ],
+      "visits": 4,
+      "mean_dwell_seconds": 10.5,
+      "max_dwell_seconds": 12.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:37:57+01:00",
+      "last_seen": "2026-10-28T15:59:21+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 109",
+      "lat": 35.71832,
+      "lon": 4.53619,
+      "groups": [
+        "12",
+        "غير مصنف"
+      ],
+      "visits": 4,
+      "mean_dwell_seconds": 44.7,
+      "max_dwell_seconds": 72.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:33:47+01:00",
+      "last_seen": "2026-10-28T16:05:21+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 110",
+      "lat": 35.71857,
+      "lon": 4.54589,
+      "groups": [
+        "13",
+        "غير مصنف"
+      ],
+      "visits": 4,
+      "mean_dwell_seconds": 54.8,
+      "max_dwell_seconds": 90.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:36:30+01:00",
+      "last_seen": "2026-10-28T16:15:25+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 111",
+      "lat": 35.72006,
+      "lon": 4.53852,
+      "groups": [
+        "12",
+        "غير مصنف"
+      ],
+      "visits": 4,
+      "mean_dwell_seconds": 28.2,
+      "max_dwell_seconds": 39.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:31:54+01:00",
+      "last_seen": "2026-10-28T16:07:09+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 112",
+      "lat": 35.72226,
+      "lon": 4.54038,
+      "groups": [
+        "12",
+        "غير مصنف"
+      ],
+      "visits": 4,
+      "mean_dwell_seconds": 28.6,
+      "max_dwell_seconds": 30.6,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:30:13+01:00",
+      "last_seen": "2026-10-28T16:09:30+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 113",
+      "lat": 35.7255,
+      "lon": 4.53753,
+      "groups": [
+        "12",
+        "غير مصنف"
+      ],
+      "visits": 4,
+      "mean_dwell_seconds": 34.7,
+      "max_dwell_seconds": 51.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:27:14+01:00",
+      "last_seen": "2026-10-28T16:14:16+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 114",
+      "lat": 35.72962,
+      "lon": 4.49833,
+      "groups": [
+        "10",
+        "غير مصنف"
+      ],
+      "visits": 4,
+      "mean_dwell_seconds": 22.2,
+      "max_dwell_seconds": 30.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:23:52+01:00",
+      "last_seen": "2026-10-28T16:03:03+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 115",
+      "lat": 35.69661,
+      "lon": 4.56683,
+      "groups": [
+        "04"
+      ],
+      "visits": 4,
+      "mean_dwell_seconds": 383.2,
+      "max_dwell_seconds": 1314.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:43:09+01:00",
+      "last_seen": "2026-10-28T16:14:10+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 116",
+      "lat": 35.70428,
+      "lon": 4.54153,
+      "groups": [
+        "16"
+      ],
+      "visits": 4,
+      "mean_dwell_seconds": 30.3,
+      "max_dwell_seconds": 48.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:28:46+01:00",
+      "last_seen": "2026-10-28T16:09:06+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 117",
+      "lat": 35.71555,
+      "lon": 4.52869,
+      "groups": [
+        "05"
+      ],
+      "visits": 4,
+      "mean_dwell_seconds": 29.3,
+      "max_dwell_seconds": 45.2,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:32:42+01:00",
+      "last_seen": "2026-10-28T16:14:04+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 118",
+      "lat": 35.72611,
+      "lon": 4.50052,
+      "groups": [
+        "09"
+      ],
+      "visits": 4,
+      "mean_dwell_seconds": 19.4,
+      "max_dwell_seconds": 42.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:29:12+01:00",
+      "last_seen": "2026-10-28T15:53:48+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 119",
+      "lat": 35.7266,
+      "lon": 4.50482,
+      "groups": [
+        "09"
+      ],
+      "visits": 4,
+      "mean_dwell_seconds": 28.8,
+      "max_dwell_seconds": 52.2,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:44:50+01:00",
+      "last_seen": "2026-10-28T16:09:42+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 120",
+      "lat": 35.73572,
+      "lon": 4.49201,
+      "groups": [
+        "16"
+      ],
+      "visits": 4,
+      "mean_dwell_seconds": 657.5,
+      "max_dwell_seconds": 1251.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:25:44+01:00",
+      "last_seen": "2026-10-28T16:16:40+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 121",
+      "lat": 35.69715,
+      "lon": 4.56276,
+      "groups": [
+        "04",
+        "05",
+        "غير مصنف"
+      ],
+      "visits": 3,
+      "mean_dwell_seconds": 16.0,
+      "max_dwell_seconds": 24.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:42:42+01:00",
+      "last_seen": "2026-10-28T16:03:39+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 122",
+      "lat": 35.70015,
+      "lon": 4.55185,
+      "groups": [
+        "04",
+        "05",
+        "16"
+      ],
+      "visits": 3,
+      "mean_dwell_seconds": 24.7,
+      "max_dwell_seconds": 38.5,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:23:09+01:00",
+      "last_seen": "2026-10-28T15:50:54+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 123",
+      "lat": 35.6999,
+      "lon": 4.55295,
+      "groups": [
+        "05",
+        "16"
+      ],
+      "visits": 3,
+      "mean_dwell_seconds": 21.0,
+      "max_dwell_seconds": 42.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:53:15+01:00",
+      "last_seen": "2026-10-28T16:01:33+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 124",
+      "lat": 35.70814,
+      "lon": 4.53108,
+      "groups": [
+        "16",
+        "غير مصنف"
+      ],
+      "visits": 3,
+      "mean_dwell_seconds": 23.2,
+      "max_dwell_seconds": 34.1,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:22:14+01:00",
+      "last_seen": "2026-10-28T15:38:45+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 125",
+      "lat": 35.71518,
+      "lon": 4.54202,
+      "groups": [
+        "13",
+        "غير مصنف"
+      ],
+      "visits": 3,
+      "mean_dwell_seconds": 40.0,
+      "max_dwell_seconds": 60.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:40:30+01:00",
+      "last_seen": "2026-10-28T16:12:12+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 126",
+      "lat": 35.72052,
+      "lon": 4.54673,
+      "groups": [
+        "13",
+        "غير مصنف"
+      ],
+      "visits": 3,
+      "mean_dwell_seconds": 20.0,
+      "max_dwell_seconds": 27.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:35:09+01:00",
+      "last_seen": "2026-10-28T16:16:31+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 127",
+      "lat": 35.72483,
+      "lon": 4.55025,
+      "groups": [
+        "17",
+        "غير مصنف"
+      ],
+      "visits": 3,
+      "mean_dwell_seconds": 25.0,
+      "max_dwell_seconds": 42.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:33:21+01:00",
+      "last_seen": "2026-10-28T16:11:18+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 128",
+      "lat": 35.73366,
+      "lon": 4.53367,
+      "groups": [
+        "17",
+        "غير مصنف"
+      ],
+      "visits": 3,
+      "mean_dwell_seconds": 24.0,
+      "max_dwell_seconds": 27.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:56:48+01:00",
+      "last_seen": "2026-10-28T16:11:12+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 129",
+      "lat": 35.73507,
+      "lon": 4.53459,
+      "groups": [
+        "17",
+        "غير مصنف"
+      ],
+      "visits": 3,
+      "mean_dwell_seconds": 21.0,
+      "max_dwell_seconds": 30.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:40:06+01:00",
+      "last_seen": "2026-10-28T16:13:40+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 130",
+      "lat": 35.73742,
+      "lon": 4.5224,
+      "groups": [
+        "17",
+        "غير مصنف"
+      ],
+      "visits": 3,
+      "mean_dwell_seconds": 15.0,
+      "max_dwell_seconds": 21.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:39:12+01:00",
+      "last_seen": "2026-10-28T16:08:15+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 131",
+      "lat": 35.73829,
+      "lon": 4.53185,
+      "groups": [
+        "17",
+        "غير مصنف"
+      ],
+      "visits": 3,
+      "mean_dwell_seconds": 28.3,
+      "max_dwell_seconds": 33.8,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:27:14+01:00",
+      "last_seen": "2026-10-28T16:04:54+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 132",
+      "lat": 35.73954,
+      "lon": 4.51667,
+      "groups": [
+        "17",
+        "غير مصنف"
+      ],
+      "visits": 3,
+      "mean_dwell_seconds": 18.6,
+      "max_dwell_seconds": 21.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:34:18+01:00",
+      "last_seen": "2026-10-28T15:58:03+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 133",
+      "lat": 35.70011,
+      "lon": 4.5341,
+      "groups": [
+        "13"
+      ],
+      "visits": 3,
+      "mean_dwell_seconds": 11.0,
+      "max_dwell_seconds": 12.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T16:05:30+01:00",
+      "last_seen": "2026-10-28T16:06:21+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 134",
+      "lat": 35.70416,
+      "lon": 4.53471,
+      "groups": [
+        "16"
+      ],
+      "visits": 3,
+      "mean_dwell_seconds": 51.0,
+      "max_dwell_seconds": 81.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:25:11+01:00",
+      "last_seen": "2026-10-28T16:12:48+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 135",
+      "lat": 35.71794,
+      "lon": 4.53064,
+      "groups": [
+        "05"
+      ],
+      "visits": 3,
+      "mean_dwell_seconds": 33.3,
+      "max_dwell_seconds": 48.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:30:55+01:00",
+      "last_seen": "2026-10-28T16:01:51+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 136",
+      "lat": 35.72094,
+      "lon": 4.53277,
+      "groups": [
+        "05"
+      ],
+      "visits": 3,
+      "mean_dwell_seconds": 38.7,
+      "max_dwell_seconds": 51.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:28:46+01:00",
+      "last_seen": "2026-10-28T16:04:12+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 137",
+      "lat": 35.72515,
+      "lon": 4.53648,
+      "groups": [
+        "05"
+      ],
+      "visits": 3,
+      "mean_dwell_seconds": 30.8,
+      "max_dwell_seconds": 39.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:25:03+01:00",
+      "last_seen": "2026-10-28T16:09:03+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 138",
+      "lat": 35.72606,
+      "lon": 4.50418,
+      "groups": [
+        "09"
+      ],
+      "visits": 3,
+      "mean_dwell_seconds": 10.7,
+      "max_dwell_seconds": 14.2,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:27:02+01:00",
+      "last_seen": "2026-10-28T15:46:42+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 139",
+      "lat": 35.73021,
+      "lon": 4.50853,
+      "groups": [
+        "09"
+      ],
+      "visits": 3,
+      "mean_dwell_seconds": 34.0,
+      "max_dwell_seconds": 78.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:50:21+01:00",
+      "last_seen": "2026-10-28T16:13:13+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 140",
+      "lat": 35.7025,
+      "lon": 4.51988,
+      "groups": [
+        "11",
+        "غير مصنف"
+      ],
+      "visits": 2,
+      "mean_dwell_seconds": 9.0,
+      "max_dwell_seconds": 9.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T16:01:42+01:00",
+      "last_seen": "2026-10-28T16:11:36+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 141",
+      "lat": 35.70698,
+      "lon": 4.53967,
+      "groups": [
+        "04",
+        "11"
+      ],
+      "visits": 2,
+      "mean_dwell_seconds": 12.0,
+      "max_dwell_seconds": 12.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:36:45+01:00",
+      "last_seen": "2026-10-28T15:52:18+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 142",
+      "lat": 35.71486,
+      "lon": 4.52856,
+      "groups": [
+        "10",
+        "غير مصنف"
+      ],
+      "visits": 2,
+      "mean_dwell_seconds": 37.5,
+      "max_dwell_seconds": 57.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T16:15:43+01:00",
+      "last_seen": "2026-10-28T16:16:40+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 143",
+      "lat": 35.71713,
+      "lon": 4.52523,
+      "groups": [
+        "10",
+        "16"
+      ],
+      "visits": 2,
+      "mean_dwell_seconds": 25.5,
+      "max_dwell_seconds": 30.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T16:06:27+01:00",
+      "last_seen": "2026-10-28T16:14:52+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 144",
+      "lat": 35.71743,
+      "lon": 4.54495,
+      "groups": [
+        "13",
+        "غير مصنف"
+      ],
+      "visits": 2,
+      "mean_dwell_seconds": 49.5,
+      "max_dwell_seconds": 60.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T16:08:21+01:00",
+      "last_seen": "2026-10-28T16:14:04+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 145",
+      "lat": 35.73457,
+      "lon": 4.53432,
+      "groups": [
+        "17",
+        "غير مصنف"
+      ],
+      "visits": 2,
+      "mean_dwell_seconds": 38.5,
+      "max_dwell_seconds": 55.6,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:23:18+01:00",
+      "last_seen": "2026-10-28T15:33:23+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 146",
+      "lat": 35.7385,
+      "lon": 4.53559,
+      "groups": [
+        "17",
+        "غير مصنف"
+      ],
+      "visits": 2,
+      "mean_dwell_seconds": 39.0,
+      "max_dwell_seconds": 60.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:54:18+01:00",
+      "last_seen": "2026-10-28T16:15:49+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 147",
+      "lat": 35.74363,
+      "lon": 4.47617,
+      "groups": [
+        "12",
+        "غير مصنف"
+      ],
+      "visits": 2,
+      "mean_dwell_seconds": 426.5,
+      "max_dwell_seconds": 802.0,
+      "confidence": "متوسطة",
+      "first_seen": "2026-10-28T15:21:35+01:00",
+      "last_seen": "2026-10-28T16:03:57+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 148",
+      "lat": 35.70088,
+      "lon": 4.53309,
+      "groups": [
+        "13"
+      ],
+      "visits": 2,
+      "mean_dwell_seconds": 15.0,
+      "max_dwell_seconds": 18.0,
+      "confidence": "أولية",
+      "first_seen": "2026-10-28T16:06:51+01:00",
+      "last_seen": "2026-10-28T16:07:42+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 149",
+      "lat": 35.70209,
+      "lon": 4.53172,
+      "groups": [
+        "غير مصنف"
+      ],
+      "visits": 2,
+      "mean_dwell_seconds": 18.0,
+      "max_dwell_seconds": 24.0,
+      "confidence": "أولية",
+      "first_seen": "2026-10-28T16:02:24+01:00",
+      "last_seen": "2026-10-28T16:04:15+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 150",
+      "lat": 35.70422,
+      "lon": 4.53884,
+      "groups": [
+        "16"
+      ],
+      "visits": 2,
+      "mean_dwell_seconds": 17.1,
+      "max_dwell_seconds": 19.1,
+      "confidence": "أولية",
+      "first_seen": "2026-10-28T15:32:03+01:00",
+      "last_seen": "2026-10-28T16:10:21+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 151",
+      "lat": 35.70524,
+      "lon": 4.52613,
+      "groups": [
+        "11"
+      ],
+      "visits": 2,
+      "mean_dwell_seconds": 16.5,
+      "max_dwell_seconds": 21.0,
+      "confidence": "أولية",
+      "first_seen": "2026-10-28T16:15:46+01:00",
+      "last_seen": "2026-10-28T16:16:40+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 152",
+      "lat": 35.70668,
+      "lon": 4.53154,
+      "groups": [
+        "13"
+      ],
+      "visits": 2,
+      "mean_dwell_seconds": 11.5,
+      "max_dwell_seconds": 12.0,
+      "confidence": "أولية",
+      "first_seen": "2026-10-28T15:33:38+01:00",
+      "last_seen": "2026-10-28T16:10:51+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 153",
+      "lat": 35.71183,
+      "lon": 4.52859,
+      "groups": [
+        "16"
+      ],
+      "visits": 2,
+      "mean_dwell_seconds": 36.0,
+      "max_dwell_seconds": 42.0,
+      "confidence": "أولية",
+      "first_seen": "2026-10-28T15:51:06+01:00",
+      "last_seen": "2026-10-28T16:11:39+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 154",
+      "lat": 35.72002,
+      "lon": 4.52495,
+      "groups": [
+        "غير مصنف"
+      ],
+      "visits": 2,
+      "mean_dwell_seconds": 12.3,
+      "max_dwell_seconds": 12.7,
+      "confidence": "أولية",
+      "first_seen": "2026-10-28T15:28:31+01:00",
+      "last_seen": "2026-10-28T16:03:21+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 155",
+      "lat": 35.72536,
+      "lon": 4.50195,
+      "groups": [
+        "09"
+      ],
+      "visits": 2,
+      "mean_dwell_seconds": 17.4,
+      "max_dwell_seconds": 18.0,
+      "confidence": "أولية",
+      "first_seen": "2026-10-28T15:28:21+01:00",
+      "last_seen": "2026-10-28T15:37:57+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 156",
+      "lat": 35.6916,
+      "lon": 4.57008,
+      "groups": [
+        "04"
+      ],
+      "visits": 1,
+      "mean_dwell_seconds": 12.0,
+      "max_dwell_seconds": 12.0,
+      "confidence": "أولية",
+      "first_seen": "2026-10-28T15:53:12+01:00",
+      "last_seen": "2026-10-28T15:53:24+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 157",
+      "lat": 35.69301,
+      "lon": 4.56867,
+      "groups": [
+        "04"
+      ],
+      "visits": 1,
+      "mean_dwell_seconds": 21.0,
+      "max_dwell_seconds": 21.0,
+      "confidence": "أولية",
+      "first_seen": "2026-10-28T15:52:03+01:00",
+      "last_seen": "2026-10-28T15:52:24+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 158",
+      "lat": 35.69365,
+      "lon": 4.5678,
+      "groups": [
+        "04"
+      ],
+      "visits": 1,
+      "mean_dwell_seconds": 30.0,
+      "max_dwell_seconds": 30.0,
+      "confidence": "أولية",
+      "first_seen": "2026-10-28T15:39:18+01:00",
+      "last_seen": "2026-10-28T15:39:48+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 159",
+      "lat": 35.69806,
+      "lon": 4.56064,
+      "groups": [
+        "05"
+      ],
+      "visits": 1,
+      "mean_dwell_seconds": 9.0,
+      "max_dwell_seconds": 9.0,
+      "confidence": "أولية",
+      "first_seen": "2026-10-28T16:09:06+01:00",
+      "last_seen": "2026-10-28T16:09:15+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 160",
+      "lat": 35.70481,
+      "lon": 4.54276,
+      "groups": [
+        "11"
+      ],
+      "visits": 1,
+      "mean_dwell_seconds": 12.0,
+      "max_dwell_seconds": 12.0,
+      "confidence": "أولية",
+      "first_seen": "2026-10-28T15:50:36+01:00",
+      "last_seen": "2026-10-28T15:50:48+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 161",
+      "lat": 35.70568,
+      "lon": 4.54158,
+      "groups": [
+        "05"
+      ],
+      "visits": 1,
+      "mean_dwell_seconds": 12.0,
+      "max_dwell_seconds": 12.0,
+      "confidence": "أولية",
+      "first_seen": "2026-10-28T15:47:51+01:00",
+      "last_seen": "2026-10-28T15:48:03+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 162",
+      "lat": 35.70695,
+      "lon": 4.52614,
+      "groups": [
+        "غير مصنف"
+      ],
+      "visits": 1,
+      "mean_dwell_seconds": 21.0,
+      "max_dwell_seconds": 21.0,
+      "confidence": "أولية",
+      "first_seen": "2026-10-28T16:06:21+01:00",
+      "last_seen": "2026-10-28T16:06:42+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 163",
+      "lat": 35.70779,
+      "lon": 4.5241,
+      "groups": [
+        "13"
+      ],
+      "visits": 1,
+      "mean_dwell_seconds": 12.0,
+      "max_dwell_seconds": 12.0,
+      "confidence": "أولية",
+      "first_seen": "2026-10-28T16:14:10+01:00",
+      "last_seen": "2026-10-28T16:14:22+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 164",
+      "lat": 35.70801,
+      "lon": 4.52815,
+      "groups": [
+        "غير مصنف"
+      ],
+      "visits": 1,
+      "mean_dwell_seconds": 12.0,
+      "max_dwell_seconds": 12.0,
+      "confidence": "أولية",
+      "first_seen": "2026-10-28T15:56:54+01:00",
+      "last_seen": "2026-10-28T15:57:06+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 165",
+      "lat": 35.70824,
+      "lon": 4.54727,
+      "groups": [
+        "17"
+      ],
+      "visits": 1,
+      "mean_dwell_seconds": 13.8,
+      "max_dwell_seconds": 13.8,
+      "confidence": "أولية",
+      "first_seen": "2026-10-28T15:28:21+01:00",
+      "last_seen": "2026-10-28T15:28:34+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 166",
+      "lat": 35.70838,
+      "lon": 4.5307,
+      "groups": [
+        "16"
+      ],
+      "visits": 1,
+      "mean_dwell_seconds": 12.0,
+      "max_dwell_seconds": 12.0,
+      "confidence": "أولية",
+      "first_seen": "2026-10-28T16:15:52+01:00",
+      "last_seen": "2026-10-28T16:16:04+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 167",
+      "lat": 35.71057,
+      "lon": 4.52772,
+      "groups": [
+        "16"
+      ],
+      "visits": 1,
+      "mean_dwell_seconds": 9.0,
+      "max_dwell_seconds": 9.0,
+      "confidence": "أولية",
+      "first_seen": "2026-10-28T16:12:39+01:00",
+      "last_seen": "2026-10-28T16:12:48+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 168",
+      "lat": 35.71437,
+      "lon": 4.54852,
+      "groups": [
+        "11"
+      ],
+      "visits": 1,
+      "mean_dwell_seconds": 9.0,
+      "max_dwell_seconds": 9.0,
+      "confidence": "أولية",
+      "first_seen": "2026-10-28T15:43:48+01:00",
+      "last_seen": "2026-10-28T15:43:57+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 169",
+      "lat": 35.71487,
+      "lon": 4.53342,
+      "groups": [
+        "12"
+      ],
+      "visits": 1,
+      "mean_dwell_seconds": 12.0,
+      "max_dwell_seconds": 12.0,
+      "confidence": "أولية",
+      "first_seen": "2026-10-28T15:35:06+01:00",
+      "last_seen": "2026-10-28T15:35:18+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 170",
+      "lat": 35.71732,
+      "lon": 4.53517,
+      "groups": [
+        "غير مصنف"
+      ],
+      "visits": 1,
+      "mean_dwell_seconds": 21.0,
+      "max_dwell_seconds": 21.0,
+      "confidence": "أولية",
+      "first_seen": "2026-10-28T15:51:42+01:00",
+      "last_seen": "2026-10-28T15:52:03+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 171",
+      "lat": 35.71949,
+      "lon": 4.5377,
+      "groups": [
+        "غير مصنف"
+      ],
+      "visits": 1,
+      "mean_dwell_seconds": 15.0,
+      "max_dwell_seconds": 15.0,
+      "confidence": "أولية",
+      "first_seen": "2026-10-28T15:49:51+01:00",
+      "last_seen": "2026-10-28T15:50:06+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 172",
+      "lat": 35.71962,
+      "lon": 4.52177,
+      "groups": [
+        "10"
+      ],
+      "visits": 1,
+      "mean_dwell_seconds": 9.0,
+      "max_dwell_seconds": 9.0,
+      "confidence": "أولية",
+      "first_seen": "2026-10-28T16:12:21+01:00",
+      "last_seen": "2026-10-28T16:12:30+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 173",
+      "lat": 35.72133,
+      "lon": 4.51957,
+      "groups": [
+        "12"
+      ],
+      "visits": 1,
+      "mean_dwell_seconds": 12.0,
+      "max_dwell_seconds": 12.0,
+      "confidence": "أولية",
+      "first_seen": "2026-10-28T15:45:24+01:00",
+      "last_seen": "2026-10-28T15:45:36+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 174",
+      "lat": 35.72143,
+      "lon": 4.54995,
+      "groups": [
+        "غير مصنف"
+      ],
+      "visits": 1,
+      "mean_dwell_seconds": 12.0,
+      "max_dwell_seconds": 12.0,
+      "confidence": "أولية",
+      "first_seen": "2026-10-28T15:33:15+01:00",
+      "last_seen": "2026-10-28T15:33:27+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 175",
+      "lat": 35.72215,
+      "lon": 4.54721,
+      "groups": [
+        "13"
+      ],
+      "visits": 1,
+      "mean_dwell_seconds": 18.0,
+      "max_dwell_seconds": 18.0,
+      "confidence": "أولية",
+      "first_seen": "2026-10-28T15:34:21+01:00",
+      "last_seen": "2026-10-28T15:34:39+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 176",
+      "lat": 35.72346,
+      "lon": 4.51769,
+      "groups": [
+        "12"
+      ],
+      "visits": 1,
+      "mean_dwell_seconds": 9.0,
+      "max_dwell_seconds": 9.0,
+      "confidence": "أولية",
+      "first_seen": "2026-10-28T15:46:36+01:00",
+      "last_seen": "2026-10-28T15:46:45+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 177",
+      "lat": 35.72416,
+      "lon": 4.54811,
+      "groups": [
+        "13"
+      ],
+      "visits": 1,
+      "mean_dwell_seconds": 21.3,
+      "max_dwell_seconds": 21.3,
+      "confidence": "أولية",
+      "first_seen": "2026-10-28T15:17:45+01:00",
+      "last_seen": "2026-10-28T15:18:06+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 178",
+      "lat": 35.72566,
+      "lon": 4.54848,
+      "groups": [
+        "13"
+      ],
+      "visits": 1,
+      "mean_dwell_seconds": 12.0,
+      "max_dwell_seconds": 12.0,
+      "confidence": "أولية",
+      "first_seen": "2026-10-28T16:12:55+01:00",
+      "last_seen": "2026-10-28T16:13:07+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 179",
+      "lat": 35.72835,
+      "lon": 4.49736,
+      "groups": [
+        "غير مصنف"
+      ],
+      "visits": 1,
+      "mean_dwell_seconds": 9.0,
+      "max_dwell_seconds": 9.0,
+      "confidence": "أولية",
+      "first_seen": "2026-10-28T16:03:33+01:00",
+      "last_seen": "2026-10-28T16:03:42+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 180",
+      "lat": 35.7297,
+      "lon": 4.54899,
+      "groups": [
+        "17"
+      ],
+      "visits": 1,
+      "mean_dwell_seconds": 12.0,
+      "max_dwell_seconds": 12.0,
+      "confidence": "أولية",
+      "first_seen": "2026-10-28T16:01:12+01:00",
+      "last_seen": "2026-10-28T16:01:24+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 181",
+      "lat": 35.73399,
+      "lon": 4.50253,
+      "groups": [
+        "غير مصنف"
+      ],
+      "visits": 1,
+      "mean_dwell_seconds": 15.0,
+      "max_dwell_seconds": 15.0,
+      "confidence": "أولية",
+      "first_seen": "2026-10-28T16:09:54+01:00",
+      "last_seen": "2026-10-28T16:10:09+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 182",
+      "lat": 35.7351,
+      "lon": 4.49295,
+      "groups": [
+        "04"
+      ],
+      "visits": 1,
+      "mean_dwell_seconds": 12.0,
+      "max_dwell_seconds": 12.0,
+      "confidence": "أولية",
+      "first_seen": "2026-10-28T16:12:06+01:00",
+      "last_seen": "2026-10-28T16:12:18+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 183",
+      "lat": 35.73764,
+      "lon": 4.52406,
+      "groups": [
+        "غير مصنف"
+      ],
+      "visits": 1,
+      "mean_dwell_seconds": 12.0,
+      "max_dwell_seconds": 12.0,
+      "confidence": "أولية",
+      "first_seen": "2026-10-28T15:38:42+01:00",
+      "last_seen": "2026-10-28T15:38:54+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 184",
+      "lat": 35.73788,
+      "lon": 4.52939,
+      "groups": [
+        "غير مصنف"
+      ],
+      "visits": 1,
+      "mean_dwell_seconds": 21.0,
+      "max_dwell_seconds": 21.0,
+      "confidence": "أولية",
+      "first_seen": "2026-10-28T16:05:33+01:00",
+      "last_seen": "2026-10-28T16:05:54+01:00"
+    },
+    {
+      "label": "نقطة افتراضية 185",
+      "lat": 35.74062,
+      "lon": 4.47937,
+      "groups": [
+        "غير مصنف"
+      ],
+      "visits": 1,
+      "mean_dwell_seconds": 27.0,
+      "max_dwell_seconds": 27.0,
+      "confidence": "أولية",
+      "first_seen": "2026-10-28T16:16:13+01:00",
+      "last_seen": "2026-10-28T16:16:40+01:00"
+    }
+  ]
 }

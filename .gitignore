@@ -5,3 +5,8 @@
 *.key
 .DS_Store
 Thumbs.db
+
+# Private, local-only bus observation records and Python caches.
+analysis/private/
+__pycache__/
+*.py[cod]

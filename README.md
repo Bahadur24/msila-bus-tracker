@@ -1,38 +1,44 @@
-# M’sila Bus Tracker — Updated Source (v4)
+# متتبّع حافلات المسيلة
 
-This directory contains the updated static website source, its route data, and bundled Leaflet assets. It is separate from the older original GitHub version.
+خريطة ويب عربية متجاوبة لمتابعة الحافلات، مبنية للاستضافة الثابتة على **GitHub Pages فقط**. لا تستخدم هذه النسخة وسيط API ولا تضع رمز تتبع داخل ملفات الموقع.
 
-## Run locally
+## تشغيل محلي
 
-Python 3 is sufficient; no package installation is required to serve the website. From this directory, run:
+تحتاج Python 3 فقط:
 
 ```sh
 python3 -m http.server 8000
 ```
 
-Then open `http://localhost:8000` in a browser. Serving over HTTP (rather than opening `index.html` directly) is needed for browser features such as the service worker.
+ثم افتح `http://localhost:8000`. يلزم تشغيل الموقع عبر خادم HTTP كي تعمل الخريطة وميزة التخزين المؤقت للعمل دون اتصال.
 
-## Performance modes
+## ميزات الخريطة
 
-The display settings offer automatic, balanced, strong-device, light, and ultra-saving modes. Automatic mode selects light mode on lower-capability or data-saving connections, strong-device mode when both available memory and processor-core signals are high, and balanced mode otherwise. Strong-device mode smooths bus-marker movement without increasing live-data polling; reduced-motion preferences are respected.
+- عرض الحافلات حسب الحالة، مع البحث والفرز والتصفية حسب الخط والسرعة والتحديث الأخير.
+- إعداد رابط خادم Traccar وبيانات الدخول من داخل المتصفح؛ تُحفظ الإعدادات في تخزين هذا المتصفح فقط وتُرسل إلى الخادم الذي يختاره المستخدم.
+- البحث عن الحافلات ومواقع التوقف القريبة بعد إذن الموقع، ومؤشر ETA تقريبي عندما تكون إشارة الحافلة واتجاهها حديثين. المسافة خط مستقيم وليست موعد وصول أو مسار طريق.
+- محطات تنبيه شخصية ومفضلة وتنبيهات داخل الصفحة، مع توضيح أن التنبيه يحتاج اتصالًا حيًا وبقاء الصفحة مفتوحة.
+- إعادة عرض حركة رُصدت أثناء فتح الصفحة؛ يُحفظ سجل محلي محدود على الجهاز ولا يُرفع إلى خادم التتبع.
+- أوضاع مظهر وخرائط وأداء متعددة، مع دعم الهاتف والوضع الداكن والتخزين المؤقت لأصول الموقع العامة.
 
-## Contents
+## مواقع GPS المرصودة
 
-- `index.html`, `src/`, `sw.js`, `manifest.webmanifest`, and the icons: website interface and app shell.
-- `msila_routes.json`: route data used by the site.
-- `vendor/`: bundled Leaflet library and map marker/layer images.
-- `tools/`: the project’s QA and upgrade helper scripts; these are optional and are not needed to run the site.
+`data/observed_stops.json` يحتوي سبعة تجمّعات GPS مُجمّعة من رصد سابق بتاريخ 27 أكتوبر 2026: 637 عينة ناجحة بفاصل مطلوب 30 ثانية و57 سجل حافلة، مع فجوتين كبيرتين وخمس قراءات فاشلة. يعرضها الموقع على أنها مواقع توقف GPS مرصودة، وليست محطات ركاب رسمية أو تنبؤات وصول مباشرة. لا يتضمن الملف معرّفات الحافلات.
 
-This is a static-site source package; it does not include deployment credentials, hidden deployment state, or generated caches.
+## نقاط الوقوف المتوقعة/الافتراضية
 
-## Observed stop locations
+يحتوي `expected_stops.json` على مجموعة مستقلة تُستنتج من نافذة رصد لاحقة كل ثلاث ثوانٍ، وتُعرض منفصلة عن مواقع GPS المرصودة. تُرشَّح الزيارة عندما تبقى إشارة الحافلة ضمن 65 مترًا وبسرعة لا تتجاوز 7 كم/س لمدة 9 ثوانٍ على الأقل وبأربع عينات، مع استبعاد المواقع الأقدم من خمس دقائق، ثم تُجمع النقاط المتقاربة ضمن 100 متر. المجموعة التي يظهر اسمها في واجهة الموقع مأخوذة من رقم الحافلة بعد `/` في سجل التتبع.
 
-`data/observed_stops.json` contains seven aggregate GPS stop clusters derived from read-only observations on 2026-10-27. The set contains 637 successful 30-second snapshots of 57 bus records and records the two major observation gaps and five failed reads. The map labels these as observed GPS stop locations, not official passenger stations or live arrival predictions. Bus identifiers and credentials are not included.
+كل نقطة هنا **متوقعة/افتراضية وليست محطة رسمية**. لا يسجل الجزء الأساسي أكبر فجوة بين العينات لكل زيارة على حدة، لذا قد لا تكون مدة الوقوف دقيقة لكل رصد. تعرض اللوحة زمن التغطية، والفاصل المقاس، وفشل الطلبات، وتأخر البداية أو الفجوة بين جزأي الرصد متى توفرت؛ لا تُقدَّم نافذة الرصد على أنها ساعة كاملة إذا لم تثبتها الطوابع الزمنية.
 
-## Nearby search, estimates, favorites, and replay
+## الخصوصية والاستضافة
 
-- Nearby search uses the browser's location permission and compares straight-line distances to fresh, online buses and the observed GPS clusters. Location is used in the page and is not sent to a separate service.
-- An arrival estimate is shown only when a bus has a recent position and a known GPS heading roughly toward the selected point. It divides straight-line distance by the current reported speed; it does not follow roads, account for traffic or dwell time, or represent an official timetable.
-- Movement replay uses positions collected while the page is open. In supported performance modes, up to one hour is retained on the same device in local browser storage; it is not uploaded to the tracking server.
-- Favorite stops, user-edited labels, and correction notes are stored locally in that browser. The static site has no server for receiving shared name corrections; the user can copy a suggestion to share it manually.
-- Favorite-stop alerts require live data and the page to remain open. Browser notifications are optional and require permission. GitHub Pages does not provide a background push service for alerts after the page is closed.
+الموقع لا يضمّن رمز API أو بيانات اعتماد. لا تُنشر سجلات الرصد الخام أو بصمات الأجهزة؛ تحفظ محليًا داخل `analysis/private/` المستثناة من Git. الملفات العامة تقتصر على ملخصات تجمعية دون معرّفات فردية. عامل الخدمة يخزن ملفات الموقع العامة فقط، ولا يخزن بيانات الاعتماد أو استجابات API أو مربعات الخريطة. تبقى الاستضافة على GitHub Pages؛ لا تُستخدم Cloudflare أو استضافة بديلة.
+
+## بنية المشروع
+
+- `index.html`, `src/app.js`, `src/styles.css`: واجهة الموقع ومنطقها وأنماطها.
+- `data/observed_stops.json`: التجمّعات المرصودة السابقة.
+- `expected_stops.json`: ملخص نقاط الوقوف الافتراضية.
+- `msila_routes.json` و`vendor/`: بيانات الطرق ومكتبة Leaflet المجمّعة.
+- `tools/`: أدوات التحقق والرصد وتجميع النقاط؛ ليست مطلوبة لتشغيل الموقع.

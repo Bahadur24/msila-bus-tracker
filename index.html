@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl" data-theme="light" data-performance="balanced" data-marker-size="normal">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover">
-<meta name="theme-color" content="#f7f9fc"><meta name="description" content="خريطة حافلات المسيلة مع مواقع توقف GPS متكررة مرصودة؛ ليست قائمة محطات رسمية. بيانات التتبع الحقيقية تتطلب إعداد الاتصال محليًا.">
+<meta name="theme-color" content="#f7f9fc"><meta name="description" content="خريطة حافلات المسيلة مع مواقع توقف GPS مرصودة ونقاط توقف متوقعة/افتراضية؛ ليست محطات رسمية. بيانات التتبع الحقيقية تتطلب إعداد الاتصال محليًا.">
 <title>حافلات المسيلة — خريطة أوضح، رحلة أسهل</title>
 <link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="icon-192.png"><link rel="stylesheet" href="vendor/leaflet.css"><link rel="stylesheet" href="src/styles.css">
 <script>try{var t=localStorage.getItem('msila_tracker_theme_v1')||'light';document.documentElement.dataset.theme=t==='system'?(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'):t;}catch(e){}</script>
@@ -46,7 +46,7 @@
 <button id="performanceBadge" type="button" title="تغيير وضع الأداء" aria-label="تغيير وضع الأداء">أداء متوازن</button>
 <div id="tileError" class="note warn hidden" role="status">تعذّر تحميل بعض أجزاء الخريطة. تحقق من الإنترنت، أو اختر «بلا خلفية» لتقليل البيانات. <button id="btnRetryTiles" class="btn sm" type="button">إعادة المحاولة</button></div>
 <div id="noTilesNote" class="hidden">خريطة مبسطة بلا تنزيل صور · تُعرض هندسات الطرق المحفوظة فقط</div>
-<div id="legend" role="note" aria-label="مفتاح الحافلات ومواقع توقف GPS المرصودة، وليست محطات رسمية"><span><i style="background:#087f5b"></i>متحركة</span><span><i style="background:#b76a08"></i>متوقفة</span><span><i style="background:#64748b"></i>غير متصلة</span><span><i style="background:#7653b8"></i>توقف GPS مرصود (ليس محطة رسمية)</span></div>
+<div id="legend" role="note" aria-label="مفتاح الحافلات ومواقع GPS المرصودة والنقاط الافتراضية؛ ليست محطات رسمية"><span><i style="background:#087f5b"></i>متحركة</span><span><i style="background:#b76a08"></i>متوقفة</span><span><i style="background:#64748b"></i>غير متصلة</span><span><i style="background:#7653b8"></i>توقف GPS مرصود (ليس محطة رسمية)</span><span><i style="background:#f4b740"></i>توقف متوقع/افتراضي (ليس محطة رسمية)</span></div>
 </main>
 <div id="backdrop"></div>
 <aside id="sidebar" aria-label="لوحة الحافلات">
@@ -58,6 +58,12 @@
 <details class="foldout"><summary>الفرز والتصفية حسب الخط</summary><div class="foldout-content"><div class="sortrow"><label for="sortSel">الترتيب</label><select id="sortSel"><option value="name">الاسم / الرقم</option><option value="speed">الأسرع أولًا</option><option value="dist">الأقرب إليّ</option><option value="recent">آخر تحديث</option><option value="line">الخط</option></select></div><div class="sortrow"><label for="lineSel">الخط</label><select id="lineSel"><option value="all">كل الخطوط</option></select></div></div></details>
 <div class="acts"><button id="btnNear" class="btn"><svg><use href="#i-locate"/></svg>موقعي</button><button id="btnFit" class="btn"><svg><use href="#i-fit"/></svg>عرض الكل</button></div>
 <div class="list-heading"><span>نتائج البحث</span><span id="listCount">0 حافلة</span></div><div class="buslist" id="buslist"></div>
+<details class="foldout" id="expectedStopsFold"><summary><span class="expected-summary"><svg aria-hidden="true"><use href="#i-stop"/></svg><span>نقاط الوقوف المتوقعة</span><span id="expectedStopCount" class="n">—</span></span></summary><div class="foldout-content">
+<div id="expectedStopStatus" class="note warn">الرصد جارٍ؛ ستُعرض النقاط الافتراضية بعد اكتمال التحليل.</div>
+<details class="stop-method"><summary>كيف حُدّدت هذه النقاط؟</summary><p>تُرشَّح الزيارة عندما تبقى إشارة الحافلة ضمن 65م وبسرعة لا تتجاوز 7 كم/س مدة 9 ثوانٍ على الأقل مع 4 عينات. تُستبعد الإشارات الأقدم من 5 دقائق، وتُجمع الزيارات المتقاربة ضمن 100م. الرصد الأساسي لا يسجل أكبر فجوة لكل زيارة؛ لذلك بعض المدد تقديرية، وكل النقاط افتراضية وليست محطات رسمية.</p></details>
+<div class="sortrow"><label for="expectedGroupFilter">المجموعة:</label><select id="expectedGroupFilter" aria-label="تصفية النقاط حسب المجموعة"><option value="all">كل المجموعات</option></select></div>
+<div class="acts"><button id="btnExpectedToggle" class="btn ghost" type="button" aria-pressed="true">إخفاء النقاط</button><button id="btnExpectedShowAll" class="btn" type="button">إظهار كل النقاط</button></div>
+<div id="expectedStopList" class="expected-stop-list" aria-live="polite"></div></div></details>
 <details class="foldout more-tools"><summary>أدوات إضافية</summary><div class="foldout-content"><div class="acts"><button id="btnStation" class="btn">محطة تنبيه</button><button id="btnTrackAll" class="btn" aria-pressed="false">هندسات الطرق</button><button id="btnExportJson" class="btn ghost">تصدير JSON</button><button id="btnExportCsv" class="btn ghost">تصدير CSV</button></div></div></details><div class="sidebar-foot">اختر حافلة لرؤية سرعتها واتجاهها وتفاصيل موقعها.</div>
 </div></aside>
 <nav id="mobileDock" aria-label="التنقل السريع"><button id="btnFleetDock"><svg><use href="#i-bus"/></svg><span>الحافلات <b id="dockCount">0</b></span></button><button id="btnFitDock"><svg><use href="#i-fit"/></svg><span>عرض الكل</span></button><button id="btnLocateDock"><svg><use href="#i-locate"/></svg><span>موقعي</span></button><button id="btnDisplayDock"><svg><use href="#i-display"/></svg><span>العرض</span></button></nav>

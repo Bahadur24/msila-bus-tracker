@@ -326,9 +326,10 @@
   }
 
   /* ---------- 5. الخريطة: only normal viewport tile requests, no prefetch ---------- */
-  var map, tileLayer, busLayer, myLayer, routeLayer, histLayer, stLayer, observedStopLayer;
+  var map, tileLayer, busLayer, myLayer, routeLayer, histLayer, stLayer, observedStopLayer, expectedStopLayer;
   var markers = {};
   var observedStopData = null, observedStopsVisible = true;
+  var expectedStopData = null, expectedStopsVisible = true;
   function initMap() {
     map = L.map('map', {
       center: cfg.center, zoom: cfg.zoom, minZoom: 8, maxZoom: 19,
@@ -346,10 +347,14 @@
     map.createPane('observedStopsPane');
     map.getPane('observedStopsPane').style.zIndex = '630';
     observedStopLayer = L.layerGroup().addTo(map);
+    map.createPane('expectedStopsPane');
+    map.getPane('expectedStopsPane').style.zIndex = '620';
+    expectedStopLayer = L.layerGroup().addTo(map);
     map.on('zoomend moveend', function() {
       state.cardMode = cardModeForZoom(map.getZoom());
       renderMarkers(); updateMapCount();
     });
+    map.on('zoomend', renderExpectedStopMarkers);
     setTiles();
   }
   function setTiles(force) {
@@ -673,6 +678,134 @@
     } else {
       toast('أُخفيت مواقع التوقف المرصودة', 'ok', 2600);
     }
+  }
+
+  function renderExpectedStopMarkers() {
+    if (!expectedStopLayer) return;
+    expectedStopLayer.clearLayers();
+    if (!expectedStopsVisible || !expectedStopData || !Array.isArray(expectedStopData.stops)) return;
+    var selector = $('expectedGroupFilter');
+    var selectedGroup = selector ? selector.value : 'all';
+    var visible = expectedStopData.stops.filter(function(stop) {
+      var groups = Array.isArray(stop.groups) ? stop.groups.map(String) : [];
+      return selectedGroup === 'all' || groups.indexOf(selectedGroup) >= 0;
+    });
+    var points = [];
+    visible.forEach(function(stop, index) {
+      var lat = Number(stop.lat), lon = Number(stop.lon);
+      if (!validPosition(lat, lon)) return;
+      points.push({ stop: stop, index: index, lat: lat, lon: lon, point: map.latLngToContainerPoint([lat, lon]) });
+    });
+    var clusters = [], radius = map.getZoom() < 14 ? 54 : 42;
+    points.forEach(function(item) {
+      var host = null, nearest = radius;
+      if (map.getZoom() < 16) clusters.forEach(function(cluster) {
+        var dx = item.point.x - cluster.x, dy = item.point.y - cluster.y, distance = Math.sqrt(dx * dx + dy * dy);
+        if (distance < nearest) { nearest = distance; host = cluster; }
+      });
+      if (host) {
+        host.items.push(item); host.sumLat += item.lat; host.sumLon += item.lon;
+        host.lat = host.sumLat / host.items.length; host.lon = host.sumLon / host.items.length;
+        host.x = (host.x * (host.items.length - 1) + item.point.x) / host.items.length;
+        host.y = (host.y * (host.items.length - 1) + item.point.y) / host.items.length;
+      } else clusters.push({ items: [item], lat: item.lat, lon: item.lon, sumLat: item.lat, sumLon: item.lon, x: item.point.x, y: item.point.y });
+    });
+    clusters.forEach(function(cluster) {
+      if (cluster.items.length > 1) {
+        var count = cluster.items.length;
+        var marker = L.marker([cluster.lat, cluster.lon], {
+          pane: 'expectedStopsPane', title: count + ' نقاط توقف متوقعة',
+          icon: L.divIcon({ html: '<span class="ep-cluster" aria-hidden="true">' + count + '</span>', className: 'expected-marker', iconSize: [36, 36], iconAnchor: [18, 18] })
+        });
+        marker.on('click', function() { goTo([cluster.lat, cluster.lon], Math.min(19, map.getZoom() + 2)); });
+        marker.addTo(expectedStopLayer).bindTooltip(count + ' نقاط توقف متوقعة/افتراضية — اضغط للتقريب', { direction: 'top', offset: [0, -16], className: 'bustip' });
+        return;
+      }
+      var item = cluster.items[0], stop = item.stop;
+      var groups = Array.isArray(stop.groups) ? stop.groups.map(function(group) { return 'مجموعة ' + esc(group); }).join('، ') : 'مجموعة غير محددة';
+      var label = esc(stop.label || ('نقطة متوقعة ' + (item.index + 1)));
+      var tip = '<b>' + label + '</b><br>توقف متوقع/افتراضي — ليس محطة رسمية<br>' + groups + '<br>' + (Number(stop.visits) || 0) + ' رصد' + (stop.confidence ? ' · ثقة ' + esc(stop.confidence) : '');
+      var single = L.marker([item.lat, item.lon], {
+        pane: 'expectedStopsPane', title: stop.label || 'نقطة توقف متوقعة',
+        icon: L.divIcon({ html: '<span class="ep-pin" aria-hidden="true"><span>•</span></span>', className: 'expected-marker', iconSize: [29, 29], iconAnchor: [14, 25] })
+      });
+      single.on('click', function() { goTo([item.lat, item.lon], Math.max(16, map.getZoom())); });
+      single.addTo(expectedStopLayer).bindTooltip(tip, { direction: 'top', offset: [0, -20], className: 'bustip' });
+    });
+  }
+
+  function renderExpectedStops() {
+    var data = expectedStopData || {}, all = Array.isArray(data.stops) ? data.stops : [];
+    var selector = $('expectedGroupFilter'), selectedGroup = selector ? selector.value : 'all', groupSet = {};
+    all.forEach(function(stop) { (Array.isArray(stop.groups) ? stop.groups : []).forEach(function(group) { groupSet[String(group)] = true; }); });
+    var groups = Object.keys(groupSet).sort(function(a, b) { return a.localeCompare(b, 'ar', { numeric: true }); });
+    if (selector) {
+      if (selectedGroup !== 'all' && !groupSet[selectedGroup]) selectedGroup = 'all';
+      selector.innerHTML = '<option value="all">كل المجموعات</option>' + groups.map(function(group) {
+        return '<option value="' + esc(group) + '"' + (selectedGroup === group ? ' selected' : '') + '>مجموعة ' + esc(group) + '</option>';
+      }).join('');
+      selector.value = selectedGroup;
+    }
+    var visible = all.map(function(stop, index) { return { stop: stop, index: index }; }).filter(function(item) {
+      var assigned = Array.isArray(item.stop.groups) ? item.stop.groups.map(String) : [];
+      return selectedGroup === 'all' || assigned.indexOf(selectedGroup) >= 0;
+    });
+    $('expectedStopCount').textContent = String(all.length);
+    var note = $('expectedStopStatus'), meta = data.observation || {};
+    if (data.status === 'complete') {
+      var cadence = Number(meta.mean_actual_cadence_seconds), maxCadence = Number(meta.max_actual_cadence_seconds), requested = Number(meta.requested_interval_seconds);
+      var message = all.length ? 'عُثر على ' + all.length + ' نقطة افتراضية مرشحة' : 'لم تُرصد نقاط تستوفي شروط الترشيح في نافذة الرصد';
+      if (meta.successful_cycles != null) message += ' · ' + meta.successful_cycles + ' عينة ناجحة';
+      if (Number(meta.failed_cycles) > 0) message += ' · فشل ' + Number(meta.failed_cycles) + ' طلبات';
+      if (Number(meta.unverified_gap_events) > 0) message += ' · ' + Number(meta.unverified_gap_events) + ' زيارة بلا قياس دقيق للفجوة';
+      if (isFinite(requested) && requested > 0) message += ' · الهدف كل ' + requested.toFixed(0) + ' ث';
+      if (isFinite(cadence) && cadence > 0) message += ' · المتوسط ' + cadence.toFixed(1) + ' ث';
+      if (isFinite(maxCadence) && maxCadence > 0) message += ' · الأقصى ' + maxCadence.toFixed(1) + ' ث';
+      if (meta.coverage_seconds != null) message += ' · تغطية ' + Math.round(meta.coverage_seconds / 60) + ' د';
+      if (Number(meta.coverage_gap_from_requested_start_seconds) > 0) message += ' · تأخر البدء ' + Math.round(meta.coverage_gap_from_requested_start_seconds) + ' ث';
+      if (Number(meta.inter_segment_gap_seconds) > 0) message += ' · فجوة بين جزأي الرصد ' + Math.round(meta.inter_segment_gap_seconds) + ' ث';
+      note.textContent = message + '؛ النقاط متوقعة/افتراضية وليست محطات رسمية.';
+      note.className = 'note ' + (all.length ? 'ok' : 'warn');
+    } else if (data.status === 'collecting') {
+      note.textContent = 'الرصد قيد التنفيذ؛ ستُحدَّث القائمة بعد تحليل التوقفات. لا توجد محطات رسمية مضافة هنا.';
+      note.className = 'note warn';
+    } else {
+      note.textContent = 'ستُعرض هنا نقاط الوقوف المتوقعة بعد اكتمال الرصد. هذه نقاط افتراضية وليست محطات رسمية.';
+      note.className = 'note warn';
+    }
+    $('expectedStopList').innerHTML = visible.length ? visible.map(function(item) {
+      var stop = item.stop, groupsText = Array.isArray(stop.groups) ? stop.groups.map(function(group) { return 'مجموعة ' + esc(group); }).join('، ') : 'مجموعة غير محددة';
+      var visits = Number(stop.visits) || 0, dwell = Number(stop.mean_dwell_seconds) || 0;
+      var confidence = stop.confidence ? ' · ثقة ' + esc(stop.confidence) : '';
+      return '<button type="button" class="expected-point" data-stop-index="' + item.index + '"><span class="ep-icon" aria-hidden="true">' + uiIcon('stop') + '</span><span class="ep-main"><span class="ep-title">' + esc(stop.label || ('نقطة متوقعة ' + (item.index + 1))) + '</span><span class="ep-meta">' + groupsText + ' · ' + visits + ' رصد' + (dwell ? ' · توقف متوسط ' + Math.round(dwell) + ' ث' : '') + confidence + '</span></span></button>';
+    }).join('') : '<div class="empty">لا توجد نقاط ضمن هذه المجموعة.</div>';
+    $('btnExpectedToggle').disabled = all.length === 0;
+    $('btnExpectedShowAll').disabled = all.length === 0;
+    $('btnExpectedToggle').textContent = expectedStopsVisible ? 'إخفاء النقاط' : 'إظهار النقاط';
+    $('btnExpectedToggle').setAttribute('aria-pressed', String(expectedStopsVisible));
+    renderExpectedStopMarkers();
+  }
+
+  function loadExpectedStops() {
+    fetch('./expected_stops.json', { cache: 'no-store' }).then(function(response) {
+      if (!response.ok) throw new Error('HTTP_' + response.status);
+      return response.json();
+    }).then(function(data) {
+      if (!data || typeof data !== 'object' || Array.isArray(data) || !Array.isArray(data.stops)) throw new Error('INVALID_EXPECTED_STOP_DATA');
+      var safeStatuses = ['pending', 'collecting', 'complete'];
+      data.status = safeStatuses.indexOf(data.status) >= 0 ? data.status : 'pending';
+      data.observation = data.observation && typeof data.observation === 'object' && !Array.isArray(data.observation) ? data.observation : {};
+      data.stops = data.stops.filter(function(stop) {
+        if (!stop || typeof stop !== 'object' || stop.lat == null || stop.lon == null || !validPosition(Number(stop.lat), Number(stop.lon))) return false;
+        stop.groups = Array.isArray(stop.groups) ? stop.groups.map(function(group) { return String(group).trim(); }).filter(function(group) { return /^[0-9]{1,4}$/.test(group); }) : [];
+        return true;
+      });
+      expectedStopData = data;
+      renderExpectedStops();
+    }).catch(function() {
+      expectedStopData = { status: 'pending', stops: [] };
+      renderExpectedStops();
+    });
   }
 
   function getObservedStop(id) {
@@ -1692,6 +1825,16 @@
     ['btnNear','btnMapLocate','btnLocateDock'].forEach(function(id){$(id).onclick=locateMe;});
     ['btnFit','btnMapFit','btnFitDock'].forEach(function(id){$(id).onclick=fitBuses;});
     $('btnObservedStops').onclick=toggleObservedStops;
+    $('expectedGroupFilter').onchange=renderExpectedStops;
+    $('btnExpectedToggle').onclick=function(){expectedStopsVisible=!expectedStopsVisible;renderExpectedStops();};
+    $('btnExpectedShowAll').onclick=function(){
+      expectedStopsVisible=true;$('expectedGroupFilter').value='all';renderExpectedStops();
+      var stops=expectedStopData&&Array.isArray(expectedStopData.stops)?expectedStopData.stops:[];
+      var points=stops.map(function(stop){return [Number(stop.lat),Number(stop.lon)];}).filter(function(point){return validPosition(point[0],point[1]);});
+      if(points.length===1)goTo(points[0],16);
+      else if(points.length>1)map.fitBounds(L.latLngBounds(points).pad(.18),{maxZoom:16,animate:canAnimate()});
+      else toast('لا توجد نقاط متوقعة لعرضها بعد','warn',2800);
+    };
     $('btnFocus').onclick=toggleFocus;$('btnWideMap').onclick=toggleFocus;
     $('btnRetryTiles').onclick=function(){setTiles(true);};
     $('btnFullscreen').disabled=!document.documentElement.requestFullscreen;
@@ -1706,6 +1849,7 @@
     $('sortSel').onchange=function(e){state.sort=e.target.value;if(state.sort==='dist'&&!state.myPos)toast('حدّد موقعك أولًا للترتيب حسب القرب');renderList();};
     $('lineSel').onchange=function(e){state.lineFilter=e.target.value;filtersChanged();};
     $('buslist').onclick=function(e){var row=e.target.closest('[data-id]');if(!row)return;selectBus(row.dataset.id,true);if(innerWidth<1000)closeSidebar();};
+    $('expectedStopList').onclick=function(e){var row=e.target.closest('[data-stop-index]');if(!row||!expectedStopData)return;var stop=expectedStopData.stops[Number(row.dataset.stopIndex)];if(!stop||!validPosition(Number(stop.lat),Number(stop.lon)))return;goTo([Number(stop.lat),Number(stop.lon)],Math.max(15,map.getZoom()));if(innerWidth<1000)closeSidebar();};
     $('logSearch').oninput=function(e){state.logQuery=e.target.value;renderLog();};
     $('logFilters').onclick=function(e){var b=e.target.closest('[data-lf]');if(b){state.logFilter=b.dataset.lf;renderLog();}};
     $('btnClearLog').onclick=function(){state.log=[];saveLog();renderLog();toast('تم مسح السجل','ok');};
@@ -1762,7 +1906,7 @@
     try{themeChoice=localStorage.getItem(LS_THEME)||'light';}catch(e){}
     setTheme(themeChoice,false);
     document.documentElement.dataset.performance=effectivePerformance();
-    initMap();wire();renderStation();loadObservedStops();
+    initMap();wire();renderStation();loadObservedStops();loadExpectedStops();
     if(window.ResizeObserver)new ResizeObserver(updateChrome).observe($('appChrome'));
     updateChrome();applyDisplay();renderAll();
     log('info','بدء تشغيل الواجهة — لم تُضمّن أي بيانات دخول في التطبيق');

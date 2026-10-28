@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "status": "collecting",
+  "notice": "الرصد جارٍ منذ أول عينة ناجحة؛ ستُضاف نقاط الوقوف المتوقعة بعد اكتمال النافذة وتحليلها. لا تُعرض هنا محطات رسمية.",
+  "observation": {
+    "requested_start": "2026-10-28T15:12:49+01:00",
+    "actual_start": "2026-10-28T15:16:38+01:00",
+    "first_success": "2026-10-28T15:16:38+01:00",
+    "target_end": "2026-10-28T16:16:38+01:00",
+    "requested_interval_seconds": 3,
+    "minimum_dwell_seconds": 9
+  },
+  "stops": []
+}

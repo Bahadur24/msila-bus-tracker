@@ -65,7 +65,7 @@ html[data-theme="dark"] #map {background:var(--panel2)}
 .city-dot {color:var(--accent);padding-inline-start:2px}
 .map-subline {font-size:10px;gap:7px;line-height:1.7;margin-top:8px}
 .map-subline #visibleCount {font-weight:600}
-#mapLayers {position:absolute;z-index:550;top:132px;right:18px;display:flex;gap:6px;max-width:calc(100% - 110px)}
+#mapLayers {position:absolute;z-index:550;top:132px;right:18px;display:flex;flex-wrap:wrap;align-items:flex-start;gap:6px;max-width:calc(100% - 110px)}
 .layer-chip {min-height:34px;display:inline-flex;align-items:center;justify-content:center;gap:6px;border:1px solid var(--line);border-radius:10px;background:var(--panel);padding:5px 9px;font-size:10px;color:var(--muted);box-shadow:0 3px 12px #23382c0d;white-space:nowrap}
 .layer-chip b {font-size:10px;background:var(--panel2);padding:1px 4px;border-radius:4px;font-weight:600}
 .layer-chip[aria-pressed="true"] {color:var(--txt);border-color:color-mix(in srgb,var(--muted) 32%,var(--line))}
@@ -73,6 +73,10 @@ html[data-theme="dark"] #map {background:var(--panel2)}
 .layer-chip[aria-pressed="false"] b {opacity:.55}
 .layer-dot {width:7px;height:7px;flex:0 0 7px;border-radius:3px}
 .layer-dot.expected {background:#d79b38}.layer-dot.observed {background:#7653b8;border-radius:50%}
+.map-look-chip {min-width:104px;color:var(--accent);border-color:color-mix(in srgb,var(--accent) 25%,var(--line))}
+.map-look-chip[aria-pressed="true"] {background:color-mix(in srgb,var(--accent) 7%,var(--panel));border-color:color-mix(in srgb,var(--accent) 42%,var(--line))}
+.look-swatch {width:13px;height:13px;flex:0 0 13px;border:1px solid color-mix(in srgb,var(--accent) 35%,var(--line));border-radius:50%;background:linear-gradient(135deg,#d9e1dc 0 48%,#f3f0e7 50% 100%);box-shadow:inset 0 0 0 2px var(--panel)}
+.map-look-chip[aria-pressed="true"] .look-swatch {background:linear-gradient(135deg,#d1e5dc 0 48%,#e9edf0 50% 100%)}
 #mapTools {top:18px;left:18px;padding:5px;gap:2px;border-radius:15px;box-shadow:var(--shadow);background:var(--panel)}
 #mapTools button {width:42px;height:42px;min-width:42px;min-height:42px;border-radius:10px}
 #mapTools svg {width:20px;height:20px;stroke-width:1.7}

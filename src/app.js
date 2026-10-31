@@ -29,7 +29,7 @@
     offlineCache: true,
     station: null,
     trackOn: true,
-    mapStyle: 'streets', markerSize: 'normal', labelMode: 'auto',
+    mapStyle: 'streets', mapLook: 'classic', markerSize: 'normal', labelMode: 'auto',
     performance: 'auto', contrast: false, wideMap: false, showRoutes: false
   };
 
@@ -201,6 +201,7 @@
       if (!Array.isArray(out.center) || out.center.length !== 2) out.center = DEFAULTS.center.slice();
       if (!['auto', 'balanced', 'strong', 'lite', 'ultra'].includes(out.performance)) out.performance = 'auto';
       if (!['streets', 'calm', 'night', 'none'].includes(out.mapStyle)) out.mapStyle = 'streets';
+      if (!['classic', 'modern'].includes(out.mapLook)) out.mapLook = 'classic';
       if (!['auto', 'full', 'compact'].includes(out.labelMode)) out.labelMode = 'auto';
       if (!['normal', 'large'].includes(out.markerSize)) out.markerSize = 'normal';
       out.refreshMs = Math.max(5000, Math.min(120000, Number(out.refreshMs) || 12000));
@@ -392,10 +393,26 @@
   function applyTileFilter() {
     if (!map) return;
     var style = effectiveMapStyle(), pane = map.getPane('tilePane');
-    var filter = style === 'night' ? 'invert(1) hue-rotate(180deg) brightness(.84) contrast(1.05) saturate(.55)' :
-      style === 'calm' ? 'grayscale(.92) saturate(.2) brightness(1.03) contrast(.94)' : 'none';
+    var modern = cfg.mapLook === 'modern';
+    var filter = modern ?
+      (style === 'night' ? 'invert(1) hue-rotate(180deg) brightness(.82) contrast(1.08) saturate(.45)' :
+       style === 'calm' ? 'grayscale(.84) saturate(.16) brightness(1.06) contrast(.92)' :
+       style === 'streets' ? 'grayscale(.38) saturate(.68) brightness(1.035) contrast(.97) hue-rotate(-3deg)' : 'none') :
+      (style === 'night' ? 'invert(1) hue-rotate(180deg) brightness(.84) contrast(1.05) saturate(.55)' :
+       style === 'calm' ? 'grayscale(.92) saturate(.2) brightness(1.03) contrast(.94)' : 'none');
     if (cfg.contrast) filter = (filter === 'none' ? '' : filter + ' ') + 'contrast(1.12)';
     pane.style.filter = filter;
+    renderMapLookControl();
+  }
+  function renderMapLookControl() {
+    var modern = cfg.mapLook === 'modern', button = $('btnMapLook');
+    if (!button) return;
+    var current = modern ? 'حديثة' : 'كلاسيكية', next = modern ? 'الكلاسيكية' : 'الحديثة';
+    $('mapLookText').textContent = 'نسخة ' + current;
+    button.setAttribute('aria-pressed', String(modern));
+    button.setAttribute('aria-label', 'المظهر الحالي: ' + current + '. اضغط للتبديل إلى النسخة ' + next);
+    button.title = 'المظهر الحالي: ' + current + ' — اضغط للتبديل إلى النسخة ' + next;
+    document.documentElement.dataset.mapLook = modern ? 'modern' : 'classic';
   }
   function renderRoutes() {
     if (!routeLayer) return;
@@ -1935,6 +1952,7 @@
       else toast('لا توجد نقاط متوقعة لعرضها بعد','warn',2800);
     };
     $('btnFocus').onclick=toggleFocus;$('btnWideMap').onclick=toggleFocus;
+    $('btnMapLook').onclick=function(){cfg.mapLook=cfg.mapLook==='modern'?'classic':'modern';applyDisplay();toast(cfg.mapLook==='modern'?'فُعّل المظهر الحديث؛ يمكنك العودة إلى الكلاسيكي في أي وقت':'عادت ألوان الخريطة الكلاسيكية','ok');};
     $('btnRetryTiles').onclick=function(){setTiles(true);};
     $('btnFullscreen').disabled=!document.documentElement.requestFullscreen;
     $('btnFullscreen').onclick=function(){var job=document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();if(job&&job.catch)job.catch(function(){toast('ملء الشاشة غير متاح في هذا المتصفح','warn');});};
@@ -1964,7 +1982,7 @@
     document.querySelectorAll('[data-performance-choice]').forEach(function(b){b.onclick=function(){cfg.performance=b.dataset.performanceChoice;applyDisplay();};});
     $('fMarkerSize').onchange=function(e){cfg.markerSize=e.target.value;applyDisplay();};$('fLabelMode').onchange=function(e){cfg.labelMode=e.target.value;applyDisplay();};
     $('fContrast').onchange=function(e){cfg.contrast=e.target.checked;applyDisplay();};$('fRoutes').onchange=function(e){cfg.showRoutes=e.target.checked;applyDisplay();};
-    $('btnResetDisplay').onclick=function(){['mapStyle','markerSize','labelMode','performance','contrast','wideMap','showRoutes','cardsOn'].forEach(function(k){cfg[k]=DEFAULTS[k];});setTheme('light');applyDisplay();toast('استُعيد العرض الافتراضي؛ لم تتغير بيانات الاتصال','ok');};
+    $('btnResetDisplay').onclick=function(){['mapStyle','mapLook','markerSize','labelMode','performance','contrast','wideMap','showRoutes','cardsOn'].forEach(function(k){cfg[k]=DEFAULTS[k];});setTheme('light');applyDisplay();toast('استُعيد العرض الافتراضي؛ لم تتغير بيانات الاتصال','ok');};
     $('btnStPick').onclick=function(){var c=map.getCenter();$('fStLat').value=c.lat.toFixed(5);$('fStLon').value=c.lng.toFixed(5);toast('نُسخ مركز الخريطة');};
     $('btnStClear').onclick=function(){cfg.station=null;saveCfg();state.alertFired={};renderStation();closeModal('stationModal');toast('أُلغيت محطة التنبيه','ok');};
     $('btnStSave').onclick=function(){var la=parseFloat($('fStLat').value),lo=parseFloat($('fStLon').value);if(!validPosition(la,lo)){toast('إحداثيات المحطة غير صالحة','err');return;}cfg.station={lat:la,lon:lo,name:$('fStName').value.trim()||'محطة التنبيه',radius:Math.min(3000,Math.max(50,parseInt($('fStRad').value,10)||300))};saveCfg();state.alertFired={};renderStation();closeModal('stationModal');goTo([la,lo],15);toast(state.mode==='live'?'حُفظت محطة التنبيه':'حُفظت المحطة؛ التنبيهات تعمل مع البيانات الحقيقية فقط','ok',4500);};

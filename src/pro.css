@@ -462,3 +462,44 @@ body.map-popup-open #mapLegend,body.map-popup-open #nearbyPanel {display:none!im
 @media(max-width:999px) {
   body.map-popup-open #mapHud,body.map-popup-open #mapLayers,body.map-popup-open #mapTools,body.map-popup-open #performanceBadge {display:none!important}
 }
+
+
+/* Original user-selectable waiting-point symbols; observed GPS pins keep their own purple style. */
+.stop-icon-picker {margin:12px 0 14px;padding:12px;border:1px solid var(--line);border-radius:13px;background:var(--panel)}
+.stop-icon-picker-title {margin:0 0 9px;font-size:11px;font-weight:600;color:var(--txt)}
+.stop-icon-choices {display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
+.stop-icon-choice {min-width:0;min-height:73px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:7px 4px;border:1px solid var(--line);border-radius:10px;background:var(--panel2);color:var(--txt);font:inherit;font-size:9px;cursor:pointer;transition:border-color .15s,background .15s,box-shadow .15s}
+.stop-icon-choice:hover {border-color:color-mix(in srgb,var(--accent) 50%,var(--line))}
+.stop-icon-choice[aria-pressed="true"] {border-color:var(--accent);background:color-mix(in srgb,var(--accent) 8%,var(--panel));box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 14%,transparent);font-weight:600}
+.stop-icon-choice:focus-visible {outline:3px solid var(--accent);outline-offset:2px}
+.stop-icon-preview {width:38px;height:38px;display:grid;place-items:center;border:1px solid #c69443;border-radius:10px;background:#fff9e9;color:#956b26}
+.stop-icon-preview svg {width:25px;height:25px;stroke-width:1.8}
+.stop-icon-preview[data-stop-icon="shelter"] {border-radius:11px 11px 7px 7px}
+.stop-icon-preview[data-stop-icon="bus"] {border-radius:9px;background:#fff6de;border-color:#c69443;color:#8b6528}
+.stop-icon-preview[data-stop-icon="pin"] {border-radius:50%;background:#fff3ce;border-color:#b3822c;color:#8b6528}
+.stop-icon-picker-hint {margin:8px 0 0;font-size:9px;line-height:1.8}
+.expected-point .ep-icon[data-stop-icon] {display:grid;place-items:center}
+.expected-point .ep-icon[data-stop-icon] svg {width:21px;height:21px;stroke-width:1.8}
+.stop-bus-usage {margin-top:7px;font-size:10px;font-weight:600;color:var(--accent);line-height:1.8}
+.expected-marker .ep-waiting.stop-icon-shelter {border-radius:11px 11px 8px 8px}
+.expected-marker .ep-waiting.stop-icon-bus {background:#fff6de;border-color:#c69443;color:#8b6528}
+.expected-marker .ep-waiting.stop-icon-bus::after {background:#fff6de;border-color:#c69443}
+.expected-marker .ep-waiting.stop-icon-pin {border-radius:50%;background:#fff3ce;border-color:#b3822c;color:#8b6528}
+.expected-marker .ep-waiting.stop-icon-pin::after {display:none}
+.expected-marker .ep-waiting.stop-icon-pin svg {width:24px;height:24px}
+.expected-marker .ep-cluster {position:relative;display:grid;place-items:center}
+.expected-marker .ep-cluster svg {width:19px;height:19px}
+html[data-theme="dark"] .stop-icon-picker {background:var(--panel)}
+html[data-theme="dark"] .stop-icon-choice {background:var(--panel2);color:var(--txt)}
+html[data-theme="dark"] .stop-icon-choice[aria-pressed="true"] {background:color-mix(in srgb,var(--accent) 13%,var(--panel))}
+html[data-theme="dark"] .stop-icon-preview {background:#443b26;border-color:#b68c44;color:#ecd3a0}
+html[data-theme="dark"] .stop-icon-preview[data-stop-icon="bus"] {background:#443b26;border-color:#b68c44;color:#ecd3a0}
+html[data-theme="dark"] .stop-icon-preview[data-stop-icon="pin"] {background:#443b26;border-color:#b68c44;color:#ecd3a0}
+html[data-theme="dark"] .expected-marker .ep-waiting.stop-icon-bus {background:#443b26;border-color:#b68c44;color:#ecd3a0}
+html[data-theme="dark"] .expected-marker .ep-waiting.stop-icon-bus::after {background:#443b26;border-color:#b68c44}
+html[data-theme="dark"] .expected-marker .ep-waiting.stop-icon-pin {background:#443b26;border-color:#b68c44;color:#ecd3a0}
+@media (max-width:560px) {
+  .stop-icon-picker {padding:10px;margin:10px 0 12px}
+  .stop-icon-choices {grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+  .stop-icon-choice {min-height:68px}
+}

@@ -1,125 +1,292 @@
 #!/usr/bin/env python3
-"""Aggregate private dwell events into a complete public, group-only stop dataset."""
+"""Merge new conservative candidate-wait aggregates into public expected stops.
+
+Historical points remain published aggregates: their consecutive raw GPS samples
+are unavailable. Private application checkpoints prevent replaying new events.
+No event/device identifiers, checkpoint hashes or raw samples enter public JSON.
+"""
 from __future__ import annotations
-import datetime as dt, json, math
+
+import datetime as dt
+import hashlib
+import json
+import math
 from pathlib import Path
-ROOT=Path(__file__).resolve().parents[1]
-PRIVATE=ROOT/'analysis'/'private'
-OUTPUT=ROOT/'expected_stops.json'
-MERGE_RADIUS_M=100.0
-MAX_SAMPLE_GAP_S=20.0
-SEGMENTS=[('الرصد الأساسي',PRIVATE/'observation_progress.json',PRIVATE/'stop_visits.jsonl'),
-          ('التمديد',PRIVATE/'extension'/'observation_progress.json',PRIVATE/'extension'/'stop_visits.jsonl')]
 
-def distance(a,b):
-    r=6371000.0;p1,p2=math.radians(a['lat']),math.radians(b['lat']);dp=math.radians(b['lat']-a['lat']);dl=math.radians(b['lon']-a['lon'])
-    h=math.sin(dp/2)**2+math.cos(p1)*math.cos(p2)*math.sin(dl/2)**2
-    return 2*r*math.asin(math.sqrt(min(1.0,h)))
-def parse_time(v):
+ROOT = Path(__file__).resolve().parents[1]
+PRIVATE = ROOT / "analysis" / "private"
+OUTPUT = ROOT / "expected_stops.json"
+VISITS_FILE = PRIVATE / "stop_visits.jsonl"
+PROGRESS_FILE = PRIVATE / "observation_progress.json"
+CHECKPOINT_FILE = PRIVATE / "expected_stops_checkpoint.json"
+TRANSACTION_FILE = PRIVATE / "expected_stops_pending_merge.json"
+MERGE_RADIUS_M = 100.0
+MAX_SAMPLE_GAP_S = 20.0
+MIN_CANDIDATE_DWELL_S = 45.0
+MIN_DISTINCT_SAMPLES = 4
+
+
+def distance(a: dict, b: dict) -> float:
+    radius = 6_371_000.0
+    p1, p2 = math.radians(float(a["lat"])), math.radians(float(b["lat"]))
+    dp = math.radians(float(b["lat"]) - float(a["lat"]))
+    dl = math.radians(float(b["lon"]) - float(a["lon"]))
+    h = math.sin(dp / 2) ** 2 + math.cos(p1) * math.cos(p2) * math.sin(dl / 2) ** 2
+    return 2 * radius * math.asin(math.sqrt(min(1.0, h)))
+
+
+def parse_time(value):
     try:
-        x=dt.datetime.fromisoformat(str(v).replace('Z','+00:00'))
-        return x if x.tzinfo else x.replace(tzinfo=dt.timezone.utc)
-    except Exception:return None
-def sample_coverage(m):
-    first=parse_time(m.get('first_success'));last=parse_time(m.get('last_success'))
-    if first and last:return max(0.0,(last-first).total_seconds())
-    return max(0.0,float(m.get('coverage_seconds') or 0))
-def group_key(s):
-    if s=='غير مصنف':return (2,0,s)
-    if s.isdigit():return (0,int(s),s)
-    return (1,0,s)
+        parsed = dt.datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+        return parsed if parsed.tzinfo else parsed.replace(tzinfo=dt.timezone.utc)
+    except (TypeError, ValueError):
+        return None
 
-def main():
-    manifests=[];visits=[];published_segments=[];unverified_gap_events=0;excluded_gap_events=0
-    for label,mp,vp in SEGMENTS:
-        if not mp.exists():continue
-        m=json.loads(mp.read_text(encoding='utf-8'));manifests.append(m)
-        if vp.exists():
-            for line in vp.read_text(encoding='utf-8').splitlines():
-                try:
-                    item=json.loads(line);lat=float(item['lat']);lon=float(item['lon'])
-                    if not(-90<=lat<=90 and -180<=lon<=180) or (lat==0 and lon==0):continue
-                    dwell=max(0,float(item.get('dwell_seconds',0)));samples=max(0,int(item.get('samples',0)))
-                    gap_raw=item.get('max_gap_seconds');gap=float(gap_raw) if gap_raw is not None else None
-                    avg_gap=dwell/(samples-1) if samples>1 else 0
-                    if (gap is not None and gap>MAX_SAMPLE_GAP_S) or (gap is None and avg_gap>MAX_SAMPLE_GAP_S):
-                        excluded_gap_events+=1;continue
-                    verified=gap is not None
-                    if not verified:unverified_gap_events+=1
-                    # Whitelist public-safe fields; all identifiers/fingerprints are discarded.
-                    visits.append({'lat':lat,'lon':lon,'group':str(item.get('group','غير مصنف')),
-                        'dwell_seconds':dwell,'samples':samples,'gap_verified':verified,
-                        'arrival':item.get('arrival'),'departure':item.get('departure')})
-                except (ValueError,KeyError,TypeError):continue
-        published_segments.append({'name':label,'actual_start':m.get('actual_start'),'first_sample':m.get('first_success'),
-            'last_sample':m.get('last_success'),'actual_end':m.get('actual_end'),'coverage_seconds':round(sample_coverage(m),1),
-            'successful_cycles':m.get('successful_cycles',0),'failed_cycles':m.get('failed_cycles',0),
-            'mean_actual_cadence_seconds':m.get('mean_actual_cadence_seconds'),'max_actual_cadence_seconds':m.get('max_actual_cadence_seconds'),
-            'maximum_sample_gap_seconds':m.get('maximum_sample_gap_seconds')})
-    if len(manifests)!=len(SEGMENTS):raise SystemExit('Refusing to publish: one or more observation segments are missing')
-    if any(m.get('status')!='complete' for m in manifests):raise SystemExit('Refusing to publish: all observation segments must be complete')
-    main_manifest=manifests[0];ext=manifests[1]
-    # Keep every pair inside a cluster within the disclosed radius; avoid transitive chains.
-    clusters=[]
-    for v in visits:
-        eligible=[c for c in clusters if all(distance(v,member)<=MERGE_RADIUS_M for member in c)]
+
+def group_key(value: str):
+    if value == "غير مصنف":
+        return (2, 0, value)
+    if value.isdigit():
+        return (0, int(value), value)
+    return (1, 0, value)
+
+
+def confidence_for(visits: int, number_count: int) -> str:
+    if visits >= 5 and number_count >= 2:
+        return "مرتفعة"
+    if visits >= 3 or number_count >= 2:
+        return "متوسطة"
+    return "أولية"
+
+
+def event_key(item: dict) -> str:
+    canonical = {key: value for key, value in item.items() if not key.startswith("_")}
+    encoded = json.dumps(canonical, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()
+
+
+def load_verified_candidate_visits(path: Path) -> tuple[list[dict], int]:
+    accepted: list[dict] = []
+    ignored_legacy = 0
+    seen = set()
+    if not path.exists():
+        return accepted, 0
+    for line in path.read_text(encoding="utf-8").splitlines():
+        try:
+            item = json.loads(line)
+            if item.get("classification") != "candidate_wait":
+                ignored_legacy += 1
+                continue
+            lat, lon = float(item["lat"]), float(item["lon"])
+            dwell = float(item.get("dwell_seconds", 0))
+            samples = int(item.get("samples", 0))
+            gap = float(item["max_gap_seconds"])
+            number = str(item.get("bus_number") or item.get("group") or "غير مصنف").strip()
+            if not (-90 <= lat <= 90 and -180 <= lon <= 180) or (lat == 0 and lon == 0):
+                continue
+            if not (dwell >= MIN_CANDIDATE_DWELL_S and samples >= MIN_DISTINCT_SAMPLES and 0 <= gap <= MAX_SAMPLE_GAP_S):
+                continue
+            if not (number.isdigit() and len(number) <= 4):
+                number = "غير مصنف"
+            safe = {
+                "lat": lat, "lon": lon, "bus_number": number,
+                "dwell_seconds": dwell, "samples": samples,
+                "arrival": item.get("arrival") if parse_time(item.get("arrival")) else None,
+                "departure": item.get("departure") if parse_time(item.get("departure")) else None,
+                "max_gap_seconds": gap,
+            }
+            key = event_key(safe)
+            if key in seen:
+                continue
+            seen.add(key)
+            safe["_event_key"] = key  # private processing only; never serialized publicly
+            accepted.append(safe)
+        except (ValueError, KeyError, TypeError):
+            continue
+    return accepted, ignored_legacy
+
+
+def cluster_new_visits(visits: list[dict]) -> list[dict]:
+    """Group new visits within 100m without transitive chaining."""
+    clusters: list[list[dict]] = []
+    for visit in visits:
+        eligible = [cluster for cluster in clusters if all(distance(visit, member) <= MERGE_RADIUS_M for member in cluster)]
         if eligible:
-            def center_distance(c):
-                center={'lat':sum(x['lat'] for x in c)/len(c),'lon':sum(x['lon'] for x in c)/len(c)}
-                return distance(v,center)
-            min(eligible,key=center_distance).append(v)
-        else:clusters.append([v])
-    points=[]
+            def center_distance(cluster):
+                center = {
+                    "lat": sum(member["lat"] for member in cluster) / len(cluster),
+                    "lon": sum(member["lon"] for member in cluster) / len(cluster),
+                }
+                return distance(visit, center)
+            min(eligible, key=center_distance).append(visit)
+        else:
+            clusters.append([visit])
+
+    result = []
     for members in clusters:
-        groups=sorted({v['group'] for v in members},key=group_key);dwells=sorted(v['dwell_seconds'] for v in members)
-        verified=all(v['gap_verified'] for v in members)
-        if len(members)>=5 and len(groups)>=2 and verified:confidence='مرتفعة'
-        elif len(members)>=3 or len(groups)>=2:confidence='متوسطة'
-        else:confidence='أولية'
-        starts=[v['arrival'] for v in members if v.get('arrival')];ends=[v['departure'] for v in members if v.get('departure')]
-        points.append({'lat':sum(v['lat'] for v in members)/len(members),'lon':sum(v['lon'] for v in members)/len(members),
-            'groups':groups,'visits':len(members),'mean_dwell_seconds':round(sum(dwells)/len(dwells),1) if dwells else 0,
-            'max_dwell_seconds':round(max(dwells) if dwells else 0,1),'confidence':confidence,
-            'first_seen':min(starts) if starts else None,'last_seen':max(ends) if ends else None})
-    points.sort(key=lambda p:(-p['visits'],-len(p['groups']),p['lat'],p['lon']))
-    stops=[{'label':f'نقطة افتراضية {i:02d}','lat':round(p['lat'],5),'lon':round(p['lon'],5),'groups':p['groups'],
-        'visits':p['visits'],'mean_dwell_seconds':p['mean_dwell_seconds'],'max_dwell_seconds':p['max_dwell_seconds'],
-        'confidence':p['confidence'],'first_seen':p['first_seen'],'last_seen':p['last_seen']} for i,p in enumerate(points,1)]
-    total_cycles=sum(int(m.get('successful_cycles',0)) for m in manifests);failed=sum(int(m.get('failed_cycles',0)) for m in manifests)
-    coverage=sum(sample_coverage(m) for m in manifests)
-    internal=sum(max(0,int(m.get('successful_cycles',0))-1) for m in manifests)
-    weighted=sum(float(m.get('mean_actual_cadence_seconds') or 0)*max(0,int(m.get('successful_cycles',0))-1) for m in manifests)
-    mean_cadence=weighted/internal if internal else None
-    max_cadence=max([float(m.get('max_actual_cadence_seconds') or 0) for m in manifests] or [0])
-    main_last=parse_time(main_manifest.get('last_success'));ext_first=parse_time(ext.get('first_success'))
-    inter_gap=max(0,(ext_first-main_last).total_seconds()) if main_last and ext_first else None
-    first=parse_time(main_manifest.get('first_success') or main_manifest.get('actual_start'));last=parse_time(ext.get('last_success'))
-    span=(last-first).total_seconds() if first and last else coverage
-    interval=float(main_manifest.get('interval_requested_seconds',3))
-    expected=sum(math.floor(sample_coverage(m)/interval)+1 for m in manifests if int(m.get('successful_cycles',0))>0)
-    summary={'requested_start':main_manifest.get('requested_start'),'actual_start':main_manifest.get('actual_start'),
-        'first_success':main_manifest.get('first_success'),'last_success':ext.get('last_success'),
-        'target_end':ext.get('target_end'),'actual_end':ext.get('actual_end'),
-        'elapsed_span_seconds':round(span,1),'coverage_seconds':round(coverage,1),
-        'coverage_gap_from_requested_start_seconds':main_manifest.get('coverage_gap_from_requested_start_seconds'),
-        'inter_segment_gap_seconds':round(inter_gap,1) if inter_gap is not None else 0,
-        'successful_cycles':total_cycles,'failed_cycles':failed,'estimated_expected_cycles':expected,
-        'estimated_missed_cycles':max(0,expected-total_cycles-failed),'requested_interval_seconds':interval,
-        'mean_actual_cadence_seconds':round(mean_cadence,3) if mean_cadence else None,
-        'max_actual_cadence_seconds':round(max_cadence,3) if max_cadence else None,
-        'device_count_first_success':main_manifest.get('device_count_first_success'),
-        'segments':published_segments,'stop_confirmation_min_seconds':main_manifest.get('minimum_dwell_seconds',9),
-        'stationary_radius_m':main_manifest.get('cluster_radius_m',65),'stop_merge_radius_m':MERGE_RADIUS_M,
-        'maximum_consecutive_sample_gap_seconds':MAX_SAMPLE_GAP_S,'gap_guard_applied_segments':[s['name'] for s in published_segments if s.get('maximum_sample_gap_seconds') is not None],
-        'unverified_gap_events':unverified_gap_events,'excluded_suspicious_gap_events':excluded_gap_events,
-        'method':'اعتُبر الموقع توقفًا مرشحًا عند بقائه ضمن 65 م بسرعة منخفضة مدة 9 ثوانٍ على الأقل مع 4 عينات؛ واستُبعدت إشارات الموقع الأقدم من 5 دقائق، وجُمعت الزيارات ضمن 100 م. حدّ 20 ثانية بين العينات طُبّق في جزء التمديد فقط؛ الجزء الأساسي لا يسجل الفاصل الأقصى لكل زيارة، لذلك تظل بعض مدد التوقف تقديرية. جميع النقاط افتراضية وليست محطات رسمية.'}
-    notice='هذه نقاط توقف افتراضية/متوقعة مستنتجة آليًا من الرصد وليست محطات رسمية؛ يُرجى التحقق منها ميدانيًا.'
-    if unverified_gap_events:notice+=' بعض الزيارات من الجزء الأساسي لا تتوفر لها قياسات الفاصل الأقصى بين العينات.'
-    output={'schema_version':1,'status':'complete','notice':notice,'observation':summary,'stops':stops}
-    OUTPUT.write_text(json.dumps(output,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
-    print(json.dumps({'output':str(OUTPUT),'stops':len(stops),'dwell_events':len(visits),'groups':sorted({g for s in stops for g in s['groups']},key=group_key),
-        'successful_cycles':total_cycles,'failed_cycles':failed,'coverage_seconds':round(coverage,1),'elapsed_span_seconds':round(span,1),
-        'inter_segment_gap_seconds':summary['inter_segment_gap_seconds'],'mean_actual_cadence_seconds':summary['mean_actual_cadence_seconds'],
-        'max_actual_cadence_seconds':summary['max_actual_cadence_seconds'],'unverified_gap_events':unverified_gap_events,
-        'excluded_suspicious_gap_events':excluded_gap_events},ensure_ascii=False))
-if __name__=='__main__':main()
+        numbers = sorted({member["bus_number"] for member in members}, key=group_key)
+        numeric_count = sum(number.isdigit() for number in numbers)
+        dwells = [member["dwell_seconds"] for member in members]
+        starts = [member["arrival"] for member in members if member.get("arrival")]
+        ends = [member["departure"] for member in members if member.get("departure")]
+        result.append({
+            "lat": sum(member["lat"] for member in members) / len(members),
+            "lon": sum(member["lon"] for member in members) / len(members),
+            "groups": numbers, "visits": len(members),
+            "mean_dwell_seconds": round(sum(dwells) / len(dwells), 1),
+            "max_dwell_seconds": round(max(dwells), 1),
+            "confidence": confidence_for(len(members), numeric_count),
+            "first_seen": min(starts, key=parse_time) if starts else None,
+            "last_seen": max(ends, key=parse_time) if ends else None,
+            "_event_keys": [member["_event_key"] for member in members],
+        })
+    return result
+
+
+def merge_new_points(existing: list[dict], new_points: list[dict]) -> tuple[list[dict], int, int, set[str]]:
+    """Retain legacy confidence; only newly sampled points can gain new confidence."""
+    merged = [dict(stop) for stop in existing]
+    added = 0
+    updated = 0
+    applied_keys: set[str] = set()
+    for point in new_points:
+        eligible = [stop for stop in merged if distance(point, stop) <= MERGE_RADIUS_M]
+        if eligible:
+            host = min(eligible, key=lambda stop: distance(point, stop))
+            old_visits = max(0, int(host.get("visits", 0) or 0))
+            new_visits = int(point["visits"])
+            old_mean = max(0.0, float(host.get("mean_dwell_seconds", 0) or 0))
+            host["visits"] = old_visits + new_visits
+            host["mean_dwell_seconds"] = round((old_mean * old_visits + float(point["mean_dwell_seconds"]) * new_visits) / max(1, old_visits + new_visits), 1)
+            host["max_dwell_seconds"] = round(max(float(host.get("max_dwell_seconds", 0) or 0), float(point["max_dwell_seconds"])), 1)
+            numbers = set(str(x) for x in host.get("groups", [])) | set(str(x) for x in point.get("groups", []))
+            host["groups"] = sorted(numbers, key=group_key)
+            host["verified_new_visits"] = int(host.get("verified_new_visits", 0) or 0) + new_visits
+            for field, choose in (("first_seen", min), ("last_seen", max)):
+                values = [value for value in (host.get(field), point.get(field)) if parse_time(value)]
+                if values:
+                    host[field] = choose(values, key=parse_time)
+            if host.get("evidence_type") == "consecutive_future_samples":
+                host["confidence"] = confidence_for(host["verified_new_visits"], sum(number.isdigit() for number in numbers))
+            # Historical confidence is deliberately not upgraded without raw fixes.
+            applied_keys.update(point.get("_event_keys", []))
+            updated += 1
+            continue
+
+        numeric_count = sum(str(number).isdigit() for number in point.get("groups", []))
+        if int(point.get("visits", 0)) < 2 and numeric_count < 2:
+            # Keep this event private/unapplied so a later repeated visit can confirm it.
+            continue
+        stop = {key: value for key, value in point.items() if not key.startswith("_")}
+        stop["lat"] = round(float(point["lat"]), 5)
+        stop["lon"] = round(float(point["lon"]), 5)
+        stop["verified_new_visits"] = int(point["visits"])
+        stop["evidence_type"] = "consecutive_future_samples"
+        stop["label"] = f"نقطة افتراضية {len(merged) + 1:02d}"
+        merged.append(stop)
+        applied_keys.update(point.get("_event_keys", []))
+        added += 1
+    return merged, added, updated, applied_keys
+
+
+def json_text(data: dict) -> str:
+    return json.dumps(data, ensure_ascii=False, indent=2) + "\n"
+
+
+def atomic_write(path: Path, text: str) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_name(path.name + ".tmp")
+    temporary.write_text(text, encoding="utf-8")
+    temporary.replace(path)
+
+
+def recover_merge() -> None:
+    """Reconcile an interrupted two-file merge before considering any event again."""
+    if not TRANSACTION_FILE.exists():
+        return
+    transaction = json.loads(TRANSACTION_FILE.read_text(encoding="utf-8"))
+    current_digest = hashlib.sha256(OUTPUT.read_bytes()).hexdigest()
+    if current_digest == transaction["output_sha256"]:
+        atomic_write(CHECKPOINT_FILE, json_text(transaction["checkpoint"]))
+    elif current_digest != transaction["input_sha256"]:
+        raise SystemExit("Public dataset changed during an interrupted merge; refusing to replay events")
+    TRANSACTION_FILE.unlink()
+
+
+def main() -> None:
+    if not PROGRESS_FILE.exists():
+        raise SystemExit("No observation manifest found; collect a complete fresh window first")
+    if not OUTPUT.exists():
+        raise SystemExit("Refusing to rebuild without the currently published aggregate dataset")
+    recover_merge()
+    manifest = json.loads(PROGRESS_FILE.read_text(encoding="utf-8"))
+    if manifest.get("status") != "complete":
+        raise SystemExit("Refusing to merge an incomplete observation window")
+    input_bytes = OUTPUT.read_bytes()
+    public_data = json.loads(input_bytes)
+    if not isinstance(public_data.get("stops"), list):
+        raise SystemExit("Refusing to merge: current public stop data is invalid")
+    checkpoint = json.loads(CHECKPOINT_FILE.read_text(encoding="utf-8")) if CHECKPOINT_FILE.exists() else {}
+    last_run = public_data.get("observation", {}).get("latest_conservative_run", {})
+    if not checkpoint and int(last_run.get("candidate_visits_applied", 0) or 0) > 0:
+        raise SystemExit("Private merge checkpoint is missing; refusing to replay already published candidates")
+    already_applied = set(checkpoint.get("applied_event_keys", []))
+    all_visits, ignored_legacy = load_verified_candidate_visits(VISITS_FILE)
+    visits = [visit for visit in all_visits if visit["_event_key"] not in already_applied]
+    new_points = cluster_new_visits(visits)
+    baseline_count = len(public_data["stops"])
+    stops, added, updated, applied_now = merge_new_points(public_data["stops"], new_points)
+    if not applied_now:
+        print(json.dumps({
+            "status": "unchanged", "historical_dataset_unchanged": True,
+            "unapplied_candidate_visits": len(visits), "legacy_events_ignored": ignored_legacy,
+        }, ensure_ascii=False))
+        return
+
+    observation = public_data.setdefault("observation", {})
+    observation["latest_conservative_run"] = {
+        "actual_start": manifest.get("actual_start"), "actual_end": manifest.get("actual_end"),
+        "successful_cycles": manifest.get("successful_cycles"), "failed_cycles": manifest.get("failed_cycles"),
+        "mean_actual_cadence_seconds": manifest.get("mean_actual_cadence_seconds"),
+        "max_actual_cadence_seconds": manifest.get("max_actual_cadence_seconds"),
+        "detector_stats": manifest.get("detector_stats", {}),
+        "candidate_visits_considered": len(visits), "candidate_visits_applied": len(applied_now),
+        "pending_candidate_visits": len(visits) - len(applied_now),
+        "new_points_added": added, "existing_points_updated_from_aggregates": updated,
+        "existing_points_reprocessed_from_raw_gps": False, "legacy_event_records_ignored": ignored_legacy,
+    }
+    observation["new_detection_method"] = (
+        "التحديثات الجديدة فقط: داخل 50 م، و4 إصلاحات GPS متميزة، و15 ثانية متصلة على الأقل، "
+        "وفجوة ≤20 ثانية، وعمر موقع ≤90 ثانية، وسرعة ≤5 كم/س؛ لا يُرشح انتظار إلا بعد 45 ثانية، "
+        "ولا تُضاف نقطة جديدة إلا بتكرار الرصد أو رقمَي حافلتين. الوقفات الأقصر احتمال إشارة/ازدحام."
+    )
+    observation["historical_raw_samples_available"] = False
+    observation["existing_points_reprocessed_from_raw_gps"] = False
+    public_data["stops"] = stops
+    public_data["notice"] = str(public_data.get("notice", "")).strip()
+    if "عينات GPS الخام المتتابعة غير متاحة" not in public_data["notice"]:
+        public_data["notice"] += " النقاط التاريخية حُفظت من ملخصات مجمعة ولم تُعَد معالجتها؛ عينات GPS الخام المتتابعة غير متاحة. طُبق الكشف الأشد على الزيارات الجديدة فقط، وبقيت الثقة التاريخية كما هي."
+    public_data["schema_version"] = max(1, int(public_data.get("schema_version", 1) or 1))
+    output_text = json_text(public_data)
+    next_checkpoint = {"applied_event_keys": sorted(already_applied | applied_now)}
+    transaction = {
+        "input_sha256": hashlib.sha256(input_bytes).hexdigest(),
+        "output_sha256": hashlib.sha256(output_text.encode("utf-8")).hexdigest(),
+        "checkpoint": next_checkpoint,
+    }
+    atomic_write(TRANSACTION_FILE, json_text(transaction))
+    atomic_write(OUTPUT, output_text)
+    atomic_write(CHECKPOINT_FILE, json_text(next_checkpoint))
+    TRANSACTION_FILE.unlink()
+    print(json.dumps({
+        "output": str(OUTPUT), "existing_points_retained": baseline_count,
+        "new_points_added": added, "existing_points_updated_from_aggregates": updated,
+        "new_candidate_visits_applied": len(applied_now),
+        "pending_candidate_visits": len(visits) - len(applied_now),
+        "legacy_events_ignored": ignored_legacy,
+        "historical_raw_samples_available": False, "existing_points_reprocessed_from_raw_gps": False,
+    }, ensure_ascii=False))
+
+
+if __name__ == "__main__":
+    main()

@@ -16,6 +16,7 @@
 <symbol id="i-locate" viewBox="0 0 24 24"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3"/></symbol>
 <symbol id="i-fit" viewBox="0 0 24 24"><path d="M4 9V4h5m6 0h5v5M4 15v5h5m6 0h5v-5M9 9h6v6H9z"/></symbol>
 <symbol id="i-stop" viewBox="0 0 24 24"><path d="M12 22s7-5.1 7-12a7 7 0 1 0-14 0c0 6.9 7 12 7 12Z"/><circle cx="12" cy="10" r="2.5"/></symbol>
+<symbol id="i-bus-stop" viewBox="0 0 32 32"><path d="M24 4v24m-3 0h6"/><rect x="3.5" y="4.5" width="16" height="20" rx="3"/><path d="M7 8h9v7H7zM7 19h1m7 0h1M8 25v2m7-2v2M24 6h7v9h-7zM26 9h3m-3 3h3"/></symbol>
 <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 7v5h-5M4 17v-5h5M6 7a7 7 0 0 1 11-2l3 4M4 15l3 4a7 7 0 0 0 11-2"/></symbol>
 <symbol id="i-settings" viewBox="0 0 24 24"><path d="m9 3-.6 2-2 .9-1.9-.5-2 3.4L4 10.4v2.3l-1.5 1.6 2 3.4 2-.5 2 .9L9 20h4l.6-2 2-.9 1.9.5 2-3.4-1.5-1.6v-2.3l1.5-1.6-2-3.4-2 .5-2-.9L13 3z"/><circle cx="11" cy="11.5" r="3"/></symbol>
 <symbol id="i-display" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/><circle cx="9" cy="6" r="2"/><circle cx="15" cy="12" r="2"/><circle cx="8" cy="18" r="2"/></symbol>
@@ -46,7 +47,7 @@
 <button id="performanceBadge" type="button" title="تغيير وضع الأداء" aria-label="تغيير وضع الأداء">أداء متوازن</button>
 <div id="tileError" class="note warn hidden" role="status">تعذّر تحميل بعض أجزاء الخريطة. تحقق من الإنترنت، أو اختر «بلا خلفية» لتقليل البيانات. <button id="btnRetryTiles" class="btn sm" type="button">إعادة المحاولة</button></div>
 <div id="noTilesNote" class="hidden">خريطة مبسطة بلا تنزيل صور · تُعرض هندسات الطرق المحفوظة فقط</div>
-<div id="legend" role="note" aria-label="مفتاح الحافلات ومواقع GPS المرصودة والنقاط الافتراضية؛ ليست محطات رسمية"><span><i style="background:#087f5b"></i>متحركة</span><span><i style="background:#b76a08"></i>متوقفة</span><span><i style="background:#64748b"></i>غير متصلة</span><span><i style="background:#7653b8"></i>توقف GPS مرصود (ليس محطة رسمية)</span><span><i style="background:#f4b740"></i>توقف متوقع/افتراضي (ليس محطة رسمية)</span></div>
+<div id="legend" role="note" aria-label="مفتاح الحافلات ومواقع GPS المرصودة ومواقف الحافلات الافتراضية؛ ليست محطات رسمية"><span><i style="background:#087f5b"></i>متحركة</span><span><i style="background:#b76a08"></i>متوقفة</span><span><i style="background:#64748b"></i>غير متصلة</span><span><i style="background:#7653b8"></i>توقف GPS مرصود (ليس محطة رسمية)</span><span><i class="legend-bus-stop" aria-hidden="true"><svg><use href="#i-bus-stop"/></svg></i>موقف حافلة متوقع/افتراضي (ليس محطة رسمية)</span></div>
 </main>
 <div id="backdrop"></div>
 <aside id="sidebar" aria-label="لوحة الحافلات">
@@ -58,9 +59,9 @@
 <details class="foldout"><summary>الفرز والتصفية حسب الخط</summary><div class="foldout-content"><div class="sortrow"><label for="sortSel">الترتيب</label><select id="sortSel"><option value="name">الاسم / الرقم</option><option value="speed">الأسرع أولًا</option><option value="dist">الأقرب إليّ</option><option value="recent">آخر تحديث</option><option value="line">الخط</option></select></div><div class="sortrow"><label for="lineSel">الخط</label><select id="lineSel"><option value="all">كل الخطوط</option></select></div></div></details>
 <div class="acts"><button id="btnNear" class="btn"><svg><use href="#i-locate"/></svg>موقعي</button><button id="btnFit" class="btn"><svg><use href="#i-fit"/></svg>عرض الكل</button></div>
 <div class="list-heading"><span>نتائج البحث</span><span id="listCount">0 حافلة</span></div><div class="buslist" id="buslist"></div>
-<details class="foldout" id="expectedStopsFold"><summary><span class="expected-summary"><svg aria-hidden="true"><use href="#i-stop"/></svg><span>نقاط الوقوف المتوقعة</span><span id="expectedStopCount" class="n">—</span></span></summary><div class="foldout-content">
+<details class="foldout" id="expectedStopsFold"><summary><span class="expected-summary"><svg aria-hidden="true"><use href="#i-bus-stop"/></svg><span>مواقف الحافلات المتوقعة</span><span id="expectedStopCount" class="n">—</span></span></summary><div class="foldout-content">
 <div id="expectedStopStatus" class="note warn">الرصد جارٍ؛ ستُعرض النقاط الافتراضية بعد اكتمال التحليل.</div>
-<details class="stop-method"><summary>كيف حُدّدت هذه النقاط؟</summary><p>تُرشَّح الزيارة عندما تبقى إشارة الحافلة ضمن 65م وبسرعة لا تتجاوز 7 كم/س مدة 9 ثوانٍ على الأقل مع 4 عينات. تُستبعد الإشارات الأقدم من 5 دقائق، وتُجمع الزيارات المتقاربة ضمن 100م. الرصد الأساسي لا يسجل أكبر فجوة لكل زيارة؛ لذلك بعض المدد تقديرية، وكل النقاط افتراضية وليست محطات رسمية.</p></details>
+<details class="stop-method"><summary>كيف حُدّدت هذه النقاط؟</summary><p>تُرشَّح الزيارة عندما تبقى إشارة الحافلة ضمن 65م وبسرعة لا تتجاوز 7 كم/س مدة 9 ثوانٍ على الأقل مع 4 عينات، وتُستبعد الإشارات الأقدم من 5 دقائق، وتُجمع الزيارات المتقاربة ضمن 100م. بعض الزيارات الأقدم لا يتوفر لها قياس دقيق للفاصل بين العينات. نوافذ الرصد منفصلة ولم تُغطَّ الأيام بينها؛ تعرّض رصد 31 أكتوبر لانقطاع، لذا أعداد وتغطية نافذته الأولى حد أدنى محفوظ وفجوة الاستئناف موضحة في الملخص. جميع العلامات تقديرية/افتراضية وليست محطات رسمية.</p></details>
 <div class="sortrow"><label for="expectedGroupFilter">المجموعة:</label><select id="expectedGroupFilter" aria-label="تصفية النقاط حسب المجموعة"><option value="all">كل المجموعات</option></select></div>
 <div class="acts"><button id="btnExpectedToggle" class="btn ghost" type="button" aria-pressed="true">إخفاء النقاط</button><button id="btnExpectedShowAll" class="btn" type="button">إظهار كل النقاط</button></div>
 <div id="expectedStopList" class="expected-stop-list" aria-live="polite"></div></div></details>

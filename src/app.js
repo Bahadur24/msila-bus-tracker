@@ -30,7 +30,8 @@
     station: null,
     trackOn: true,
     mapStyle: 'streets', mapLook: 'modern', markerSize: 'normal', labelMode: 'auto',
-    performance: 'auto', contrast: false, wideMap: false, showRoutes: false
+    performance: 'auto', contrast: false, wideMap: false, showRoutes: false,
+    stopIcon: 'sign'
   };
 
   var cfg = loadCfg();
@@ -103,6 +104,54 @@
     return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="3" width="14" height="16" rx="3"/><path d="M5 11h14M8 3v8m8-8v8M8 19v2m8-2v2M3 8v4m18-4v4M8 15h1m6 0h1"/></svg>';
   }
   function uiIcon(id) { return '<svg aria-hidden="true"><use href="#i-' + id + '"/></svg>'; }
+  var STOP_ICON_OPTIONS = [
+    { id: 'sign', label: 'لافتة' },
+    { id: 'shelter', label: 'مظلّة انتظار' },
+    { id: 'bus', label: 'حافلة' },
+    { id: 'pin', label: 'دبوس' }
+  ];
+  function stopIconSvg(id) {
+    var icons = {
+      sign: '<svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 31V17M12 31h12"/><rect x="6" y="4" width="24" height="14" rx="2.5"/><path d="M10 8h16v5H10zM11 15h2m10 0h2"/></svg>',
+      shelter: '<svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h30l-3-7H6zM6 12v18m24-18v18M4 30h28M10 22h16M11 19v3m14-3v3"/><path d="M9 8h18"/></svg>',
+      bus: '<svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="3" width="20" height="29" rx="4"/><path d="M8 19h20M12 7h12v7H12zM12 24h2m8 0h2M12 32v2m12-2v2M5 11v8m26-8v8"/></svg>',
+      pin: '<svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 33s11-9 11-19a11 11 0 1 0-22 0c0 10 11 19 11 19Z"/><circle cx="18" cy="14" r="4"/><path d="M16 14h4m-2-2v4"/></svg>'
+    };
+    return icons[id] || icons.sign;
+  }
+  function stopBusNumbers(stop) {
+    var values = Array.isArray(stop && stop.bus_numbers) ? stop.bus_numbers : Array.isArray(stop && stop.groups) ? stop.groups : [];
+    var seen = {};
+    return values.map(String).map(function(value) { return value.trim(); }).filter(function(value) {
+      if (!/^[0-9]{1,4}$/.test(value) || seen[value]) return false;
+      seen[value] = true;
+      return true;
+    }).sort(function(a, b) { return a.localeCompare(b, 'ar', { numeric: true }); });
+  }
+  function stopBusNumbersPhrase(stop) {
+    var numbers = stopBusNumbers(stop);
+    if (!numbers.length) return 'أرقام الحافلات غير محددة';
+    return (numbers.length === 1 ? 'تستخدمها الحافلة رقم ' : 'تستخدمها الحافلات رقم ') + numbers.map(esc).join(' و');
+  }
+  function expectedStopMarkerHtml(iconId, selected) {
+    var id = ['sign', 'shelter', 'bus', 'pin'].indexOf(iconId) >= 0 ? iconId : 'sign';
+    return '<span class="ep-waiting stop-icon-' + id + (selected ? ' is-selected' : '') + '" data-stop-icon="' + id + '" aria-hidden="true">' + stopIconSvg(id) + '</span>';
+  }
+  function renderStopIconChoices() {
+    var container = $('stopIconChoices');
+    if (!container) return;
+    container.innerHTML = STOP_ICON_OPTIONS.map(function(option) {
+      return '<button type="button" class="stop-icon-choice" data-stop-icon-choice="' + option.id + '" aria-pressed="' + (cfg.stopIcon === option.id) + '"><span class="stop-icon-preview" data-stop-icon="' + option.id + '" aria-hidden="true">' + stopIconSvg(option.id) + '</span><span>' + option.label + '</span></button>';
+    }).join('');
+  }
+  function chooseStopIcon(id) {
+    if (!STOP_ICON_OPTIONS.some(function(option) { return option.id === id; })) return;
+    cfg.stopIcon = id;
+    saveCfg();
+    renderStopIconChoices();
+    renderExpectedStops();
+    toast('تم تغيير رمز المواقف إلى «' + STOP_ICON_OPTIONS.filter(function(option) { return option.id === id; })[0].label + '»', 'ok', 2200);
+  }
   function goTo(pos, zoom) {
     if (canAnimate()) map.flyTo(pos, zoom, { duration: .5 });
     else map.setView(pos, zoom, { animate: false });
@@ -204,6 +253,7 @@
       if (!['classic', 'modern'].includes(out.mapLook)) out.mapLook = DEFAULTS.mapLook;
       if (!['auto', 'full', 'compact'].includes(out.labelMode)) out.labelMode = 'auto';
       if (!['normal', 'large'].includes(out.markerSize)) out.markerSize = 'normal';
+      if (!['sign', 'shelter', 'bus', 'pin'].includes(out.stopIcon)) out.stopIcon = DEFAULTS.stopIcon;
       out.refreshMs = Math.max(5000, Math.min(120000, Number(out.refreshMs) || 12000));
       return out;
     } catch (e) { return JSON.parse(JSON.stringify(DEFAULTS)); }
@@ -710,10 +760,10 @@
   }
 
   function matchesExpectedStop(stop, group) {
-    var groups = Array.isArray(stop.groups) ? stop.groups.map(String) : [];
+    var numbers = stopBusNumbers(stop);
     var query = expectedStopQuery.trim().toLowerCase();
-    var searchText = String(stop.label || '') + ' ' + groups.map(function(g) { return 'مجموعة ' + g; }).join(' ');
-    return (group === 'all' || groups.indexOf(group) >= 0) && (!query || searchText.toLowerCase().indexOf(query) >= 0);
+    var searchText = String(stop.label || '') + ' ' + numbers.join(' ');
+    return (group === 'all' || numbers.indexOf(group) >= 0) && (!query || searchText.toLowerCase().indexOf(query) >= 0);
   }
   function updateStopDirectoryCounts() {
     var expected = expectedStopData && Array.isArray(expectedStopData.stops) ? expectedStopData.stops.length : 0;
@@ -723,10 +773,9 @@
     $('observedTypeCount').textContent = observed; $('mapObservedCount').textContent = observed;
   }
   function expectedStopPopup(stop, index) {
-    var groups = Array.isArray(stop.groups) ? stop.groups : [];
     var visits = Number(stop.visits) || 0, dwell = Number(stop.mean_dwell_seconds) || 0;
     return '<div class="expected-popup-content" dir="rtl"><span class="popup-kicker">نقطة متوقعة / افتراضية</span><h3>' + esc(stop.label || ('نقطة متوقعة ' + (index + 1))) + '</h3>' +
-      '<div class="stop-group-badges">' + groups.map(function(g) { return '<span>مجموعة ' + esc(g) + '</span>'; }).join('') + '</div>' +
+      '<div class="stop-bus-usage">' + stopBusNumbersPhrase(stop) + '</div>' +
       '<div class="popup-metrics"><div><b>' + visits + '</b><small>زيارات مرصودة</small></div><div><b>' + (dwell ? Math.round(dwell) + ' ث' : '—') + '</b><small>متوسط التوقف</small></div></div>' +
       (stop.confidence ? '<div class="popup-confidence">درجة الثقة <strong>' + esc(stop.confidence) + '</strong></div>' : '') +
       '<div class="stop-caveat">ليست محطة رسمية. تجمّع لإشارات توقف قد يمثل انتظارًا أو ازدحامًا، ولا يؤكد وجود موقف ركاب أو وقت وصول.</div></div>';
@@ -796,20 +845,19 @@
         var count = cluster.items.length;
         var marker = L.marker([cluster.lat, cluster.lon], {
           pane: 'expectedStopsPane', title: count + ' مواقف حافلات متوقعة/افتراضية',
-          icon: L.divIcon({ html: '<span class="ep-cluster" aria-hidden="true">' + uiIcon('bus-stop') + '<b>' + count + '</b></span>', className: 'expected-marker', iconSize: [44, 44], iconAnchor: [22, 22] })
+          icon: L.divIcon({ html: '<span class="ep-cluster stop-icon-' + cfg.stopIcon + '" data-stop-icon="' + cfg.stopIcon + '" aria-hidden="true">' + stopIconSvg(cfg.stopIcon) + '<b>' + count + '</b></span>', className: 'expected-marker', iconSize: [44, 44], iconAnchor: [22, 22] })
         });
         marker.on('click', function() { goTo([cluster.lat, cluster.lon], Math.min(19, map.getZoom() + 2)); });
         marker.addTo(expectedStopLayer).bindTooltip(count + ' مواقف حافلات متوقعة/افتراضية — ليست محطات رسمية — اضغط للتقريب', { direction: 'top', offset: [0, -24], className: 'bustip' });
         return;
       }
       var item = cluster.items[0], stop = item.stop;
-      var groupList = Array.isArray(stop.groups) ? stop.groups.map(function(group) { return 'مجموعة ' + esc(group); }) : [];
-      var groups = groupList.length ? groupList.join('، ') : 'مجموعة غير محددة';
+      var busNumbers = stopBusNumbersPhrase(stop);
       var label = esc(stop.label || ('نقطة متوقعة ' + (item.index + 1)));
-      var tip = '<b>' + label + '</b><br>موقف حافلة متوقع/افتراضي — ليس محطة رسمية<br>' + groups + '<br>' + (Number(stop.visits) || 0) + ' رصد' + (stop.confidence ? ' · ثقة ' + esc(stop.confidence) : '');
+      var tip = '<b>' + label + '</b><br>موقف حافلة متوقع/افتراضي — ليس محطة رسمية<br>' + busNumbers + '<br>' + (Number(stop.visits) || 0) + ' رصد' + (stop.confidence ? ' · ثقة ' + esc(stop.confidence) : '');
       var single = L.marker([item.lat, item.lon], {
         pane: 'expectedStopsPane', title: stop.label || 'موقف حافلة متوقع/افتراضي — ليس محطة رسمية',
-        icon: L.divIcon({ html: '<span class="ep-waiting' + (selectedExpectedStop === item.index ? ' is-selected' : '') + '" aria-hidden="true">' + uiIcon('bus-stop') + '</span>', className: 'expected-marker', iconSize: [36, 40], iconAnchor: [18, 37] })
+        icon: L.divIcon({ html: expectedStopMarkerHtml(cfg.stopIcon, selectedExpectedStop === item.index), className: 'expected-marker', iconSize: [36, 40], iconAnchor: [18, 37] })
       });
       single.on('click', function() { openExpectedStop(stop, item.index); });
       single.addTo(expectedStopLayer).bindTooltip(tip, { direction: 'top', offset: [0, -34], className: 'bustip' });
@@ -819,12 +867,12 @@
   function renderExpectedStops() {
     var data = expectedStopData || {}, all = Array.isArray(data.stops) ? data.stops : [];
     var selector = $('expectedGroupFilter'), selectedGroup = selector ? selector.value : 'all', groupSet = {};
-    all.forEach(function(stop) { (Array.isArray(stop.groups) ? stop.groups : []).forEach(function(group) { groupSet[String(group)] = true; }); });
+    all.forEach(function(stop) { stopBusNumbers(stop).forEach(function(number) { groupSet[number] = true; }); });
     var groups = Object.keys(groupSet).sort(function(a, b) { return a.localeCompare(b, 'ar', { numeric: true }); });
     if (selector) {
       if (selectedGroup !== 'all' && !groupSet[selectedGroup]) selectedGroup = 'all';
-      selector.innerHTML = '<option value="all">كل المجموعات</option>' + groups.map(function(group) {
-        return '<option value="' + esc(group) + '"' + (selectedGroup === group ? ' selected' : '') + '>مجموعة ' + esc(group) + '</option>';
+      selector.innerHTML = '<option value="all">كل الحافلات</option>' + groups.map(function(group) {
+        return '<option value="' + esc(group) + '"' + (selectedGroup === group ? ' selected' : '') + '>الحافلة رقم ' + esc(group) + '</option>';
       }).join('');
       selector.value = selectedGroup;
     }
@@ -864,10 +912,10 @@
       note.className = 'note warn';
     }
     $('expectedStopList').innerHTML = visible.length ? visible.map(function(item) {
-      var stop = item.stop, groupList = Array.isArray(stop.groups) ? stop.groups.map(function(group) { return 'مجموعة ' + esc(group); }) : [], groupsText = groupList.length ? groupList.join('، ') : 'مجموعة غير محددة';
+      var stop = item.stop, groupsText = stopBusNumbersPhrase(stop);
       var visits = Number(stop.visits) || 0, dwell = Number(stop.mean_dwell_seconds) || 0;
       var confidence = stop.confidence ? ' · ثقة ' + esc(stop.confidence) : '';
-      return '<button type="button" class="expected-point" aria-pressed="' + (selectedExpectedStop === item.index) + '" data-stop-index="' + item.index + '"><span class="ep-icon" aria-hidden="true">' + uiIcon('bus-stop') + '</span><span class="ep-main"><span class="ep-title">' + esc(stop.label || ('نقطة متوقعة ' + (item.index + 1))) + '</span><span class="ep-meta">' + groupsText + ' · ' + visits + ' رصد' + (dwell ? ' · توقف متوسط ' + Math.round(dwell) + ' ث' : '') + confidence + '</span></span><span class="ep-chevron" aria-hidden="true">‹</span></button>';
+      return '<button type="button" class="expected-point" aria-pressed="' + (selectedExpectedStop === item.index) + '" data-stop-index="' + item.index + '"><span class="ep-icon" data-stop-icon="' + cfg.stopIcon + '" aria-hidden="true">' + stopIconSvg(cfg.stopIcon) + '</span><span class="ep-main"><span class="ep-title">' + esc(stop.label || ('نقطة متوقعة ' + (item.index + 1))) + '</span><span class="ep-meta">' + groupsText + ' · ' + visits + ' رصد' + (dwell ? ' · توقف متوسط ' + Math.round(dwell) + ' ث' : '') + confidence + '</span></span><span class="ep-chevron" aria-hidden="true">‹</span></button>';
     }).join('') : '<div class="empty">لا توجد نقاط ضمن هذه المجموعة.</div>';
     $('btnExpectedToggle').disabled = all.length === 0;
     $('btnExpectedShowAll').disabled = all.length === 0;
@@ -887,7 +935,9 @@
       data.observation = data.observation && typeof data.observation === 'object' && !Array.isArray(data.observation) ? data.observation : {};
       data.stops = data.stops.filter(function(stop) {
         if (!stop || typeof stop !== 'object' || stop.lat == null || stop.lon == null || !validPosition(Number(stop.lat), Number(stop.lon))) return false;
-        stop.groups = Array.isArray(stop.groups) ? stop.groups.map(function(group) { return String(group).trim(); }).filter(function(group) { return /^[0-9]{1,4}$/.test(group); }) : [];
+        var numbers = Array.isArray(stop.bus_numbers) ? stop.bus_numbers : Array.isArray(stop.groups) ? stop.groups : [];
+        stop.bus_numbers = numbers.map(function(number) { return String(number).trim(); }).filter(function(number) { return /^[0-9]{1,4}$/.test(number); });
+        stop.groups = stop.bus_numbers.slice();
         return true;
       });
       expectedStopData = data;
@@ -1927,6 +1977,8 @@
 
   /* ---------- 17. UI events ---------- */
   function wire() {
+    renderStopIconChoices();
+    $('stopIconChoices').onclick=function(e){var choice=e.target.closest('[data-stop-icon-choice]');if(choice)chooseStopIcon(choice.dataset.stopIconChoice);};
     $('btnMenu').onclick=function(){openSidebar();};$('btnFleetDock').onclick=function(){openSidebar('fleet');};$('btnStopsDock').onclick=function(){openSidebar('stops');};$('btnCloseSb').onclick=closeSidebar;$('backdrop').onclick=closeSidebar;
     $('tabFleet').onclick=function(){setSidebarView('fleet');};$('tabStops').onclick=function(){setSidebarView('stops');};
     document.querySelector('.sidebar-tabs').onkeydown=function(e){if(['ArrowLeft','ArrowRight','Home','End'].indexOf(e.key)<0)return;e.preventDefault();var tabs=['tabFleet','tabStops'],index=$('tabFleet').getAttribute('aria-selected')==='true'?0:1,rtl=document.documentElement.dir==='rtl',delta=(e.key==='ArrowLeft'?1:-1)*(rtl?1:-1),next=e.key==='Home'?0:e.key==='End'?tabs.length-1:(index+delta+tabs.length)%tabs.length;setSidebarView(next===1?'stops':'fleet');$(tabs[next]).focus();};

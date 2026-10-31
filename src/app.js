@@ -29,7 +29,7 @@
     offlineCache: true,
     station: null,
     trackOn: true,
-    mapStyle: 'streets', mapLook: 'classic', markerSize: 'normal', labelMode: 'auto',
+    mapStyle: 'streets', mapLook: 'modern', markerSize: 'normal', labelMode: 'auto',
     performance: 'auto', contrast: false, wideMap: false, showRoutes: false
   };
 
@@ -201,7 +201,7 @@
       if (!Array.isArray(out.center) || out.center.length !== 2) out.center = DEFAULTS.center.slice();
       if (!['auto', 'balanced', 'strong', 'lite', 'ultra'].includes(out.performance)) out.performance = 'auto';
       if (!['streets', 'calm', 'night', 'none'].includes(out.mapStyle)) out.mapStyle = 'streets';
-      if (!['classic', 'modern'].includes(out.mapLook)) out.mapLook = 'classic';
+      if (!['classic', 'modern'].includes(out.mapLook)) out.mapLook = DEFAULTS.mapLook;
       if (!['auto', 'full', 'compact'].includes(out.labelMode)) out.labelMode = 'auto';
       if (!['normal', 'large'].includes(out.markerSize)) out.markerSize = 'normal';
       out.refreshMs = Math.max(5000, Math.min(120000, Number(out.refreshMs) || 12000));

@@ -330,6 +330,7 @@
   var markers = {};
   var observedStopData = null, observedStopsVisible = true;
   var expectedStopData = null, expectedStopsVisible = true;
+  var expectedStopQuery = '', selectedExpectedStop = null, onlyFavoriteStops = false;
   function initMap() {
     map = L.map('map', {
       center: cfg.center, zoom: cfg.zoom, minZoom: 8, maxZoom: 19,
@@ -350,11 +351,15 @@
     map.createPane('expectedStopsPane');
     map.getPane('expectedStopsPane').style.zIndex = '620';
     expectedStopLayer = L.layerGroup().addTo(map);
+    map.createPane('busesPane');
+    map.getPane('busesPane').style.zIndex = '640';
     map.on('zoomend moveend', function() {
       state.cardMode = cardModeForZoom(map.getZoom());
       renderMarkers(); updateMapCount();
     });
     map.on('zoomend', renderExpectedStopMarkers);
+    map.on('popupopen', function() { document.body.classList.add('map-popup-open'); });
+    map.on('popupclose', function() { document.body.classList.remove('map-popup-open'); });
     setTiles();
   }
   function setTiles(force) {
@@ -501,7 +506,7 @@
         var one = g[0], col = COLORS[statusOf(one)];
         var html = g.length === 1 ? '<div class="bus-dot" style="--c:' + col + '">' + busSvg() + '</div>' : '<div class="bcluster" style="--c:' + col + '">' + g.length + '</div>';
         var title = g.length === 1 ? one.name + '، ' + LABELS[statusOf(one)] : g.length + ' حافلات متقاربة؛ اضغط للتقريب';
-        var mk = L.marker([lat,lon], {icon:L.divIcon({html:html,className:'bus-marker',iconSize:[0,0],iconAnchor:[0,0]}), title:title, alt:title, keyboard:true});
+        var mk = L.marker([lat,lon], {pane:'busesPane',icon:L.divIcon({html:html,className:'bus-marker',iconSize:[0,0],iconAnchor:[0,0]}), title:title, alt:title, keyboard:true});
         mk.on('click', function() { if (g.length === 1) selectBus(one.id,true); else goTo([lat,lon],Math.min(19,map.getZoom()+2)); });
         mk.bindTooltip(esc(title), {direction:'top',offset:[0,-20],className:'bustip'}).addTo(busLayer);
       });
@@ -525,7 +530,7 @@
       seen[b.id] = true;
       var ic = busIcon(b), mk = markers[b.id], title = b.name + '، ' + LABELS[statusOf(b)];
       if(!mk) {
-        mk = L.marker([b.lat,b.lon], {icon:ic,title:title,alt:title,riseOnHover:true,keyboard:true});
+        mk = L.marker([b.lat,b.lon], {pane:'busesPane',icon:ic,title:title,alt:title,riseOnHover:true,keyboard:true});
         mk.on('click',function(){selectBus(b.id,true);}); mk.addTo(busLayer); markers[b.id] = mk;
       } else {
         var p = mk.getLatLng(); if(p.lat !== b.lat || p.lng !== b.lon) moveMarkerTo(mk,b.lat,b.lon);
@@ -615,7 +620,13 @@
   }
 
   function renderObservedStops() {
+    renderObservedDirectory();
     if (!observedStopLayer) return;
+    var openStopId = null;
+    Object.keys(observedStopMarkers).some(function(id) {
+      if (observedStopMarkers[id].isPopupOpen()) { openStopId = id; return true; }
+      return false;
+    });
     observedStopLayer.clearLayers();
     observedStopMarkers = {};
     if (!observedStopsVisible || !observedStopData || !Array.isArray(observedStopData.stops)) return;
@@ -646,6 +657,7 @@
       marker.addTo(observedStopLayer);
       observedStopMarkers[id] = marker;
     });
+    if (openStopId && observedStopMarkers[openStopId]) observedStopMarkers[openStopId].openPopup();
   }
 
   function loadObservedStops() {
@@ -680,23 +692,75 @@
     }
   }
 
+  function matchesExpectedStop(stop, group) {
+    var groups = Array.isArray(stop.groups) ? stop.groups.map(String) : [];
+    var query = expectedStopQuery.trim().toLowerCase();
+    var searchText = String(stop.label || '') + ' ' + groups.map(function(g) { return 'مجموعة ' + g; }).join(' ');
+    return (group === 'all' || groups.indexOf(group) >= 0) && (!query || searchText.toLowerCase().indexOf(query) >= 0);
+  }
+  function updateStopDirectoryCounts() {
+    var expected = expectedStopData && Array.isArray(expectedStopData.stops) ? expectedStopData.stops.length : 0;
+    var observed = observedStopData && Array.isArray(observedStopData.stops) ? observedStopData.stops.length : 0;
+    $('stopTabCount').textContent = expected + observed;
+    $('expectedTypeCount').textContent = expected; $('mapExpectedCount').textContent = expected;
+    $('observedTypeCount').textContent = observed; $('mapObservedCount').textContent = observed;
+  }
+  function expectedStopPopup(stop, index) {
+    var groups = Array.isArray(stop.groups) ? stop.groups : [];
+    var visits = Number(stop.visits) || 0, dwell = Number(stop.mean_dwell_seconds) || 0;
+    return '<div class="expected-popup-content" dir="rtl"><span class="popup-kicker">نقطة متوقعة / افتراضية</span><h3>' + esc(stop.label || ('نقطة متوقعة ' + (index + 1))) + '</h3>' +
+      '<div class="stop-group-badges">' + groups.map(function(g) { return '<span>مجموعة ' + esc(g) + '</span>'; }).join('') + '</div>' +
+      '<div class="popup-metrics"><div><b>' + visits + '</b><small>زيارات مرصودة</small></div><div><b>' + (dwell ? Math.round(dwell) + ' ث' : '—') + '</b><small>متوسط التوقف</small></div></div>' +
+      (stop.confidence ? '<div class="popup-confidence">درجة الثقة <strong>' + esc(stop.confidence) + '</strong></div>' : '') +
+      '<div class="stop-caveat">ليست محطة رسمية. تجمّع لإشارات توقف قد يمثل انتظارًا أو ازدحامًا، ولا يؤكد وجود موقف ركاب أو وقت وصول.</div></div>';
+  }
+  function openExpectedStop(stop, index) {
+    if (!stop || !validPosition(Number(stop.lat), Number(stop.lon))) return;
+    selectedExpectedStop = index;
+    closeDetail(); if (innerWidth < 1000) closeSidebar();
+    expectedStopsVisible = true;
+    renderExpectedStops();
+    map.setView([Number(stop.lat), Number(stop.lon)], Math.max(16, map.getZoom()), {animate: false});
+    L.popup({className: 'expected-stop-popup', maxWidth: 290, minWidth: 240, offset: [0, -24], autoPan: true, autoPanPaddingTopLeft: [14, 18], autoPanPaddingBottomRight: [14, innerWidth < 1000 ? (innerHeight < 560 ? 75 : 100) : 24]})
+      .setLatLng([Number(stop.lat), Number(stop.lon)]).setContent(expectedStopPopup(stop, index)).openOn(map);
+  }
+  function renderObservedDirectory() {
+    var list = observedStopData && Array.isArray(observedStopData.stops) ? observedStopData.stops : [];
+    updateStopDirectoryCounts();
+    $('btnOnlyFavorites').setAttribute('aria-pressed', String(onlyFavoriteStops));
+    var visible = list.map(function(stop, index) { return {stop:stop, index:index}; }).filter(function(item) {
+      return !onlyFavoriteStops || stopFavorites.indexOf(String(item.stop.id)) >= 0;
+    });
+    $('observedStopList').innerHTML = visible.length ? visible.map(function(item) {
+      var stop = item.stop, favorite = stopFavorites.indexOf(String(stop.id)) >= 0;
+      return '<button class="observed-point" type="button" data-observed-id="' + esc(stop.id) + '"><span class="observed-point-icon">' + uiIcon('stop') + '</span><span class="ep-main"><span class="ep-title">' + esc(observedStopName(stop, item.index)) + '</span><span class="ep-meta">' + fmtNum(stop.stop_events, 0) + ' وقفة · ' + observedBusPhrase(stop.bus_count) + '</span></span><span class="favorite-indicator' + (favorite ? ' saved' : '') + '" aria-label="' + (favorite ? 'مفضل' : 'غير مفضل') + '">' + (favorite ? '★' : '☆') + '</span></button>';
+    }).join('') : '<div class="empty">' + (onlyFavoriteStops ? 'لم تحفظ مواقع مفضلة بعد.<br>افتح موقعًا مرصودًا ثم اختر «أضف للمفضلة».' : 'جارٍ تحميل المواقع المرصودة…') + '</div>';
+  }
+  function openObservedStopFromDirectory(id) {
+    var list = observedStopData && observedStopData.stops || [], stop = list.find(function(item) { return String(item.id) === id; });
+    if (!stop) return;
+    closeDetail(); if (innerWidth < 1000) closeSidebar();
+    if (!observedStopsVisible) { observedStopsVisible = true; $('btnObservedStops').setAttribute('aria-pressed','true'); renderObservedStops(); }
+    map.setView([Number(stop.lat),Number(stop.lon)], Math.max(15,map.getZoom()), {animate:false});
+    if (observedStopMarkers[id]) observedStopMarkers[id].openPopup();
+  }
+
   function renderExpectedStopMarkers() {
     if (!expectedStopLayer) return;
     expectedStopLayer.clearLayers();
     if (!expectedStopsVisible || !expectedStopData || !Array.isArray(expectedStopData.stops)) return;
     var selector = $('expectedGroupFilter');
     var selectedGroup = selector ? selector.value : 'all';
-    var visible = expectedStopData.stops.filter(function(stop) {
-      var groups = Array.isArray(stop.groups) ? stop.groups.map(String) : [];
-      return selectedGroup === 'all' || groups.indexOf(selectedGroup) >= 0;
+    var visible = expectedStopData.stops.map(function(stop,index) { return {stop:stop,index:index}; }).filter(function(item) {
+      return matchesExpectedStop(item.stop, selectedGroup);
     });
     var points = [];
-    visible.forEach(function(stop, index) {
-      var lat = Number(stop.lat), lon = Number(stop.lon);
+    visible.forEach(function(item) {
+      var lat = Number(item.stop.lat), lon = Number(item.stop.lon);
       if (!validPosition(lat, lon)) return;
-      points.push({ stop: stop, index: index, lat: lat, lon: lon, point: map.latLngToContainerPoint([lat, lon]) });
+      points.push({ stop: item.stop, index: item.index, lat: lat, lon: lon, point: map.latLngToContainerPoint([lat, lon]) });
     });
-    var clusters = [], radius = map.getZoom() < 14 ? 54 : 42;
+    var clusters = [], radius = map.getZoom() < 14 ? 100 : map.getZoom() < 15 ? 78 : 54;
     points.forEach(function(item) {
       var host = null, nearest = radius;
       if (map.getZoom() < 16) clusters.forEach(function(cluster) {
@@ -728,9 +792,9 @@
       var tip = '<b>' + label + '</b><br>موقف حافلة متوقع/افتراضي — ليس محطة رسمية<br>' + groups + '<br>' + (Number(stop.visits) || 0) + ' رصد' + (stop.confidence ? ' · ثقة ' + esc(stop.confidence) : '');
       var single = L.marker([item.lat, item.lon], {
         pane: 'expectedStopsPane', title: stop.label || 'موقف حافلة متوقع/افتراضي — ليس محطة رسمية',
-        icon: L.divIcon({ html: '<span class="ep-waiting" aria-hidden="true">' + uiIcon('bus-stop') + '</span>', className: 'expected-marker', iconSize: [40, 44], iconAnchor: [20, 43] })
+        icon: L.divIcon({ html: '<span class="ep-waiting' + (selectedExpectedStop === item.index ? ' is-selected' : '') + '" aria-hidden="true">' + uiIcon('bus-stop') + '</span>', className: 'expected-marker', iconSize: [36, 40], iconAnchor: [18, 37] })
       });
-      single.on('click', function() { goTo([item.lat, item.lon], Math.max(16, map.getZoom())); });
+      single.on('click', function() { openExpectedStop(stop, item.index); });
       single.addTo(expectedStopLayer).bindTooltip(tip, { direction: 'top', offset: [0, -34], className: 'bustip' });
     });
   }
@@ -748,10 +812,12 @@
       selector.value = selectedGroup;
     }
     var visible = all.map(function(stop, index) { return { stop: stop, index: index }; }).filter(function(item) {
-      var assigned = Array.isArray(item.stop.groups) ? item.stop.groups.map(String) : [];
-      return selectedGroup === 'all' || assigned.indexOf(selectedGroup) >= 0;
+      return matchesExpectedStop(item.stop, selectedGroup);
     });
     $('expectedStopCount').textContent = String(all.length);
+    $('expectedResultCount').textContent = visible.length + ' من ' + all.length;
+    $('btnExpectedMap').setAttribute('aria-pressed', String(expectedStopsVisible));
+    updateStopDirectoryCounts();
     var note = $('expectedStopStatus'), meta = data.observation || {};
     if (data.status === 'complete') {
       var cadence = Number(meta.today_mean_actual_cadence_seconds != null ? meta.today_mean_actual_cadence_seconds : meta.mean_actual_cadence_seconds), maxCadence = Number(meta.today_max_actual_cadence_seconds != null ? meta.today_max_actual_cadence_seconds : meta.max_actual_cadence_seconds), requested = Number(meta.requested_interval_seconds);
@@ -784,7 +850,7 @@
       var stop = item.stop, groupList = Array.isArray(stop.groups) ? stop.groups.map(function(group) { return 'مجموعة ' + esc(group); }) : [], groupsText = groupList.length ? groupList.join('، ') : 'مجموعة غير محددة';
       var visits = Number(stop.visits) || 0, dwell = Number(stop.mean_dwell_seconds) || 0;
       var confidence = stop.confidence ? ' · ثقة ' + esc(stop.confidence) : '';
-      return '<button type="button" class="expected-point" data-stop-index="' + item.index + '"><span class="ep-icon" aria-hidden="true">' + uiIcon('bus-stop') + '</span><span class="ep-main"><span class="ep-title">' + esc(stop.label || ('نقطة متوقعة ' + (item.index + 1))) + '</span><span class="ep-meta">' + groupsText + ' · ' + visits + ' رصد' + (dwell ? ' · توقف متوسط ' + Math.round(dwell) + ' ث' : '') + confidence + '</span></span></button>';
+      return '<button type="button" class="expected-point" aria-pressed="' + (selectedExpectedStop === item.index) + '" data-stop-index="' + item.index + '"><span class="ep-icon" aria-hidden="true">' + uiIcon('bus-stop') + '</span><span class="ep-main"><span class="ep-title">' + esc(stop.label || ('نقطة متوقعة ' + (item.index + 1))) + '</span><span class="ep-meta">' + groupsText + ' · ' + visits + ' رصد' + (dwell ? ' · توقف متوسط ' + Math.round(dwell) + ' ث' : '') + confidence + '</span></span><span class="ep-chevron" aria-hidden="true">‹</span></button>';
     }).join('') : '<div class="empty">لا توجد نقاط ضمن هذه المجموعة.</div>';
     $('btnExpectedToggle').disabled = all.length === 0;
     $('btnExpectedShowAll').disabled = all.length === 0;
@@ -1747,7 +1813,7 @@
     if(persist!==false)try{localStorage.setItem(LS_THEME,themeChoice);}catch(e){}
     $('btnTheme').innerHTML=uiIcon(actual==='dark'?'sun':'moon');
     $('btnTheme').setAttribute('aria-label',actual==='dark'?'التبديل إلى الوضع الفاتح':'التبديل إلى الوضع الداكن');
-    document.querySelector('meta[name="theme-color"]').content=actual==='dark'?'#111821':'#f7f9fc';
+    document.querySelector('meta[name="theme-color"]').content=actual==='dark'?'#111d21':'#f3f6f5';
     if(map){renderRoutes();renderMarkers();}
     renderDisplayControls();
   }
@@ -1776,12 +1842,30 @@
   function openDisplay() {renderDisplayControls();openModal('displayModal');}
   function toggleTheme() {setTheme(document.documentElement.dataset.theme==='dark'?'light':'dark');}
   function toggleFocus() {cfg.wideMap=!cfg.wideMap;applyDisplay();}
-  function openSidebar() {
+  function setSidebarView(view) {
+    var stops = view === 'stops';
+    $('sidebar').dataset.view = stops ? 'stops' : 'fleet';
+    $('fleetView').classList.toggle('hidden', stops); $('stopsView').classList.toggle('hidden', !stops);
+    $('tabFleet').setAttribute('aria-selected', String(!stops)); $('tabStops').setAttribute('aria-selected', String(stops));
+    $('tabFleet').tabIndex = stops ? -1 : 0; $('tabStops').tabIndex = stops ? 0 : -1;
+    $('sidebarTitle').textContent = stops ? 'دليل نقاط الوقوف' : 'استكشف الحافلات';
+    $('fleetCount').classList.toggle('hidden', stops);
+    $('btnFleetDock').setAttribute('aria-pressed', String(!stops && $('sidebar').classList.contains('open')));
+    $('btnStopsDock').setAttribute('aria-pressed', String(stops && $('sidebar').classList.contains('open')));
+    if (!stops) renderList();
+  }
+  function setStopType(type) {
+    var observed = type === 'observed';
+    $('expectedStopsFold').classList.toggle('hidden', observed); $('observedDirectory').classList.toggle('hidden', !observed);
+    $('typeExpected').setAttribute('aria-pressed', String(!observed)); $('typeObserved').setAttribute('aria-pressed', String(observed));
+  }
+  function openSidebar(view) {
+    if (typeof view === 'string') setSidebarView(view);
     if(window.innerWidth>=1000 && cfg.wideMap){cfg.wideMap=false;applyDisplay();}
     $('sidebar').classList.add('open');$('backdrop').classList.add('show');document.body.classList.add('sidebar-open');
-    $('btnMenu').setAttribute('aria-expanded','true');renderList();
+    $('btnMenu').setAttribute('aria-expanded','true');setSidebarView($('sidebar').dataset.view);renderList();
   }
-  function closeSidebar() {$('sidebar').classList.remove('open');$('backdrop').classList.remove('show');document.body.classList.remove('sidebar-open');$('btnMenu').setAttribute('aria-expanded','false');}
+  function closeSidebar() {$('sidebar').classList.remove('open');$('backdrop').classList.remove('show');document.body.classList.remove('sidebar-open');$('btnMenu').setAttribute('aria-expanded','false');$('btnFleetDock').setAttribute('aria-pressed','false');$('btnStopsDock').setAttribute('aria-pressed','false');}
   function filtersChanged() {
     if(state.selected && !visibleBuses().some(function(b){return b.id===state.selected;}))closeDetail();
     renderAll();
@@ -1826,7 +1910,15 @@
 
   /* ---------- 17. UI events ---------- */
   function wire() {
-    $('btnMenu').onclick=openSidebar;$('btnFleetDock').onclick=openSidebar;$('btnCloseSb').onclick=closeSidebar;$('backdrop').onclick=closeSidebar;
+    $('btnMenu').onclick=function(){openSidebar();};$('btnFleetDock').onclick=function(){openSidebar('fleet');};$('btnStopsDock').onclick=function(){openSidebar('stops');};$('btnCloseSb').onclick=closeSidebar;$('backdrop').onclick=closeSidebar;
+    $('tabFleet').onclick=function(){setSidebarView('fleet');};$('tabStops').onclick=function(){setSidebarView('stops');};
+    document.querySelector('.sidebar-tabs').onkeydown=function(e){if(['ArrowLeft','ArrowRight','Home','End'].indexOf(e.key)<0)return;e.preventDefault();var tabs=['tabFleet','tabStops'],index=$('tabFleet').getAttribute('aria-selected')==='true'?0:1,rtl=document.documentElement.dir==='rtl',delta=(e.key==='ArrowLeft'?1:-1)*(rtl?1:-1),next=e.key==='Home'?0:e.key==='End'?tabs.length-1:(index+delta+tabs.length)%tabs.length;setSidebarView(next===1?'stops':'fleet');$(tabs[next]).focus();};
+    $('typeExpected').onclick=function(){setStopType('expected');};$('typeObserved').onclick=function(){setStopType('observed');};
+    $('btnOnlyFavorites').onclick=function(){onlyFavoriteStops=!onlyFavoriteStops;renderObservedDirectory();};
+    $('observedStopList').onclick=function(e){var row=e.target.closest('[data-observed-id]');if(row)openObservedStopFromDirectory(row.dataset.observedId);};
+    $('stopSearch').oninput=function(e){expectedStopQuery=e.target.value;renderExpectedStops();};
+    $('btnExpectedMap').onclick=function(){expectedStopsVisible=!expectedStopsVisible;renderExpectedStops();};
+    if(innerWidth<1000)$('mapLegend').open=false;
     $('btnRefresh').onclick=function(){refresh(true);};$('btnSettings').onclick=openSettings;$('btnDemoSetup').onclick=openSettings;$('btnTheme').onclick=toggleTheme;
     ['btnDisplay','btnMapDisplay','btnDisplayDock','performanceBadge'].forEach(function(id){$(id).onclick=openDisplay;});
     ['btnNear','btnMapLocate','btnLocateDock'].forEach(function(id){$(id).onclick=locateMe;});
@@ -1856,7 +1948,7 @@
     $('sortSel').onchange=function(e){state.sort=e.target.value;if(state.sort==='dist'&&!state.myPos)toast('حدّد موقعك أولًا للترتيب حسب القرب');renderList();};
     $('lineSel').onchange=function(e){state.lineFilter=e.target.value;filtersChanged();};
     $('buslist').onclick=function(e){var row=e.target.closest('[data-id]');if(!row)return;selectBus(row.dataset.id,true);if(innerWidth<1000)closeSidebar();};
-    $('expectedStopList').onclick=function(e){var row=e.target.closest('[data-stop-index]');if(!row||!expectedStopData)return;var stop=expectedStopData.stops[Number(row.dataset.stopIndex)];if(!stop||!validPosition(Number(stop.lat),Number(stop.lon)))return;goTo([Number(stop.lat),Number(stop.lon)],Math.max(15,map.getZoom()));if(innerWidth<1000)closeSidebar();};
+    $('expectedStopList').onclick=function(e){var row=e.target.closest('[data-stop-index]');if(!row||!expectedStopData)return;var index=Number(row.dataset.stopIndex);openExpectedStop(expectedStopData.stops[index],index);};
     $('logSearch').oninput=function(e){state.logQuery=e.target.value;renderLog();};
     $('logFilters').onclick=function(e){var b=e.target.closest('[data-lf]');if(b){state.logFilter=b.dataset.lf;renderLog();}};
     $('btnClearLog').onclick=function(){state.log=[];saveLog();renderLog();toast('تم مسح السجل','ok');};

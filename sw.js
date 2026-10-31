@@ -1,6 +1,6 @@
 /* Cache only the public app shell. Never cache credentials, API responses or map tiles. */
-var CACHE = 'msila-tracker-v5-20261031-bus-stop-markers';
-var ASSETS = ['./index.html', './src/styles.css', './src/app.js', './vendor/leaflet.css', './vendor/leaflet.js', './manifest.webmanifest', './icon.svg', './icon-192.png', './icon-512.png', './msila_routes.json', './data/observed_stops.json', './expected_stops.json'];
+var CACHE = 'msila-tracker-v6-20261031-professional';
+var ASSETS = ['./index.html', './src/styles.css', './src/pro.css', './src/fonts.css', './src/app.js', './vendor/leaflet.css', './vendor/leaflet.js', './manifest.webmanifest', './icon.svg', './icon-192.png', './icon-512.png', './msila_routes.json', './data/observed_stops.json', './expected_stops.json'];
 self.addEventListener('install', function(event) {
   event.waitUntil(caches.open(CACHE).then(function(cache) { return cache.addAll(ASSETS); }).then(function() { return self.skipWaiting(); }));
 });
